@@ -1,0 +1,50 @@
+{
+  "highlights": [
+    "DevOps internship focused",
+    "UI/UX practitioner",
+    "ML learner",
+    "Flask + PostgreSQL builder",
+    "Based in Dehradun"
+  ],
+  "skills": {
+    "Languages": ["Python", "C", "Dart", "HTML", "CSS", "JavaScript", "Bash", "SQL"],
+    "Backend & Tools": ["Flask", "REST APIs", "Git", "GitHub"],
+    "Databases": ["MySQL", "PostgreSQL", "MongoDB"],
+    "Cloud & DevOps": ["Google Cloud Platform", "AWS EC2", "Docker (Basic)", "Kubernetes (Basic)", "Linux"],
+    "Design & Media": ["Figma", "Canva", "Adobe Premiere Pro", "Adobe Photoshop", "Adobe Audition", "FL Studio"]
+  },
+  "projects": [
+    {
+      "name": "Artist Dashboard",
+      "summary": "A full-stack Flask + PostgreSQL web app for managing artists, projects, collaborations, rankings, and analytics in a role-based system.",
+      "stack": ["Python", "Flask", "PostgreSQL", "SQLAlchemy", "Jinja", "Gunicorn"],
+      "role": "Fully designed and developed by Krishna Gera.",
+      "github": "https://github.com/krishna-gera/artist-dashboard",
+      "live": "https://artist-dashboard-pied.vercel.app/"
+    },
+    {
+      "name": "Movie Revenue Predictor",
+      "summary": "ML-powered revenue prediction app evaluating 20+ parameters with smart conditional fields and interactive visual behavior.",
+      "stack": ["Flask", "scikit-learn", "NumPy", "Pandas", "Joblib", "JavaScript", "CSS"],
+      "role": "Fully designed and developed by Krishna Gera.",
+      "github": "https://github.com/krishna-gera/movie-revenue-predictiond",
+      "live": "https://movie-revenue-prediction-5uol.onrender.com/"
+    },
+    {
+      "name": "Room Booking & Approval System",
+      "summary": "An internal application for booking workflows and approval management (currently not deployed).",
+      "stack": ["Flask", "SQL", "HTML", "CSS", "JavaScript"],
+      "role": "Built to streamline booking requests and admin approvals.",
+      "github": "",
+      "live": ""
+    },
+    {
+      "name": "Dream Productivity Project (WIP)",
+      "summary": "A major ongoing build focused on personal productivity and intelligent workflow management.",
+      "stack": ["Planning", "Product Design", "DevOps pipeline in progress"],
+      "role": "Current flagship project under development.",
+      "github": "",
+      "live": ""
+    }
+  ]
+}
