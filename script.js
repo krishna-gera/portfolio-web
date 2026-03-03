@@ -21,11 +21,28 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) entry.target.classList.add('in-view');
   });
-}, { threshold: 0.15 });
+}, { threshold: 0.12 });
 
 document.querySelectorAll('.zoom-section').forEach((el) => observer.observe(el));
 
 document.getElementById('year')?.append(new Date().getFullYear());
+
+function enableCardTilt() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rotateY = ((x / rect.width) - 0.5) * 8;
+      const rotateX = ((y / rect.height) - 0.5) * -8;
+      card.style.transform = `translateY(-5px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+}
 
 async function loadContent() {
   try {
@@ -58,6 +75,8 @@ async function loadContent() {
 
     const allProjects = document.getElementById('allProjects');
     if (allProjects) renderProjects(allProjects, data.projects);
+
+    enableCardTilt();
   } catch (e) {
     console.error('Failed to load content', e);
   }
