@@ -210,7 +210,11 @@ async function loadContent() {
       data.certifications.forEach((cert) => {
         const card = document.createElement('article');
         card.className = 'card';
-        card.innerHTML = `<h3>Credential</h3><p>${cert}</p>`;
+        if (typeof cert === 'string') {
+          card.innerHTML = `<h3 class="cert-provider">Certification</h3><p>${cert}</p>`;
+        } else {
+          card.innerHTML = `<h3 class="cert-provider">${cert.provider}</h3><p>${cert.name}</p>`;
+        }
         certEl.appendChild(card);
       });
     }

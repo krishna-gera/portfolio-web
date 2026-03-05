@@ -250,7 +250,7 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); margin-bottom: 0.6rem; }
   color: var(--muted);
 }
 
-.skills-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.skills-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .skill-block, .card, .contact-card, .form {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -273,8 +273,20 @@ h2 { font-size: clamp(1.5rem, 3vw, 2.3rem); margin-bottom: 0.6rem; }
 .card:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
 .card h3 { margin: 0 0 0.2rem; }
 .meta { font-size: 0.92rem; color: var(--muted); }
+.meta strong { font-weight: 800; color: var(--text); }
 .links { display: flex; gap: 0.8rem; margin-top: 0.8rem; flex-wrap: wrap; }
 .links a { color: var(--accent); font-weight: 700; }
+
+#certifications .card {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--surface-strong) 93%, transparent), var(--surface));
+}
+.cert-provider {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 800;
+}
+
 .tag {
   display: inline-block;
   font-size: 0.75rem;
@@ -398,6 +410,7 @@ footer {
   section { padding: 4.4rem 0; }
   .hero { grid-template-columns: 1fr; }
   .profile { justify-self: start; }
+  .skills-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
