@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | Krishna Gera</title>
+  <meta name="description" content="Projects by Krishna Gera including Artist Dashboard, Movie Revenue Predictor, and productivity-focused systems." />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html">Krishna Gera</a>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
+  </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+  <main class="page">
+    <section class="zoom-section">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Projects & Case Snapshots</h1>
+      <p class="lead">Systems I built end-to-end to demonstrate engineering, ML logic, and user-first interfaces.</p>
+      <div class="project-toolbar">
+        <div class="filter-row" id="projectFilters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="full-stack">Full-Stack</button>
+          <button class="filter-btn" data-filter="ml">ML</button>
+          <button class="filter-btn" data-filter="automation">Automation</button>
+          <button class="filter-btn" data-filter="wip">WIP</button>
+        </div>
+        <input id="projectSearch" type="search" placeholder="Search project or stack..." aria-label="Search projects" />
+      </div>
+    </section>
+    <section class="zoom-section">
+      <div id="allProjects" class="cards"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Need details for internship screening? <a href="contact.html">Let’s connect.</a></p>
+  </footer>
+</body>
+</html>

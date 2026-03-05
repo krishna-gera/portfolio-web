@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Krishna Gera</title>
+  <meta name="description" content="Contact Krishna Gera for internships, project collaboration, and hiring opportunities." />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <div id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html">Krishna Gera</a>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html" class="active">Contact</a>
+    </nav>
+    <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
+  </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+  <main class="page">
+    <section class="contact zoom-section">
+      <h1>Let’s Work Together</h1>
+      <p class="lead">I’m open to DevOps internships, freelance work, and startup collaboration.</p>
+      <div class="contact-grid">
+        <a class="contact-card" href="mailto:krishnagera.work@gmail.com">
+          <h3>Email</h3>
+          <p>krishnagera.work@gmail.com</p>
+        </a>
+        <a class="contact-card" target="_blank" rel="noreferrer" href="https://github.com/krishna-gera">
+          <h3>GitHub</h3>
+          <p>@krishna-gera</p>
+        </a>
+        <a class="contact-card" target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/krishna-gera/">
+          <h3>LinkedIn</h3>
+          <p>krishna-gera</p>
+        </a>
+      </div>
+      <button class="btn btn-secondary" id="copyEmail" data-email="krishnagera.work@gmail.com">Copy email address</button>
+      <span id="copyStatus" class="meta"></span>
+    </section>
+
+    <section class="zoom-section contact-form-wrap">
+      <h2>Get In Touch</h2>
+      <p class="lead">Share your idea, internship opportunity, or collaboration request.</p>
+      <form class="form" action="mailto:krishnagera.work@gmail.com" method="post" enctype="text/plain">
+        <label>Name <input type="text" name="name" required /></label>
+        <label>Email <input type="email" name="email" required /></label>
+        <label>Message <textarea name="message" rows="5" required></textarea></label>
+        <button class="btn" type="submit">Send</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>Response time: Usually within 24 hours.</p>
+  </footer>
+</body>
+</html>
