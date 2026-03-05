@@ -15,6 +15,7 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="index.html">Krishna Gera</a>
     <nav>
@@ -31,6 +32,7 @@
         <p class="eyebrow">Open to DevOps Internships</p>
         <h1>Building reliable products with <span>DevOps</span>, <span>UI/UX</span>, and <span>ML</span>.</h1>
         <p class="lead">I’m Krishna Gera from Dehradun, focused on shipping practical systems and polished interfaces. I build with Flask, cloud tooling, and design-first thinking.</p>
+        <p class="typing-line">Currently exploring: <span id="typedRole"></span></p>
         <div class="cta-row">
           <a class="btn" href="contact.html">Contact Me</a>
           <a class="btn btn-secondary" href="https://raw.githubusercontent.com/krishna-gera/my-portfolio/main/Krishna_Gera_CV.pdf" download>Download Resume</a>
@@ -38,6 +40,8 @@
       </div>
       <img src="photos/myprofile.png" alt="Portrait of Krishna Gera" class="profile" />
     </section>
+
+    <section class="stats zoom-section" id="stats"></section>
 
     <section class="about zoom-section">
       <h2>About</h2>
@@ -57,7 +61,16 @@
       </div>
       <div id="featuredProjects" class="cards"></div>
     </section>
+
+    <section class="certs zoom-section">
+      <div class="section-head">
+        <h2>Certifications</h2>
+      </div>
+      <div class="cards" id="certifications"></div>
+    </section>
   </main>
+
+  <button id="toTop" aria-label="Back to top">↑</button>
 
   <footer>
     <p>© <span id="year"></span> Krishna Gera · Dehradun, India</p>
