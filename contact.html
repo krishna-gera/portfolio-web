@@ -12,13 +12,28 @@
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="index.html">Krishna Gera</a>
-    <nav>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
       <a href="index.html">Home</a>
       <a href="projects.html">Projects</a>
       <a href="contact.html" class="active">Contact</a>
     </nav>
-    <button id="themeToggle" aria-label="Toggle theme">🌙</button>
+    <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
   </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
   <main class="page">
     <section class="contact zoom-section">
@@ -42,8 +57,9 @@
       <span id="copyStatus" class="meta"></span>
     </section>
 
-    <section class="zoom-section">
-      <h2>Quick Message</h2>
+    <section class="zoom-section contact-form-wrap">
+      <h2>Get In Touch</h2>
+      <p class="lead">Share your idea, internship opportunity, or collaboration request.</p>
       <form class="form" action="mailto:krishnagera.work@gmail.com" method="post" enctype="text/plain">
         <label>Name <input type="text" name="name" required /></label>
         <label>Email <input type="email" name="email" required /></label>
