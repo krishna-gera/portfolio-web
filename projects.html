@@ -9,6 +9,7 @@
   <script defer src="script.js"></script>
 </head>
 <body>
+  <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="index.html">Krishna Gera</a>
     <nav>
@@ -24,6 +25,16 @@
       <p class="eyebrow">Portfolio</p>
       <h1>Projects & Case Snapshots</h1>
       <p class="lead">Systems I built end-to-end to demonstrate engineering, ML logic, and user-first interfaces.</p>
+      <div class="project-toolbar">
+        <div class="filter-row" id="projectFilters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="full-stack">Full-Stack</button>
+          <button class="filter-btn" data-filter="ml">ML</button>
+          <button class="filter-btn" data-filter="automation">Automation</button>
+          <button class="filter-btn" data-filter="wip">WIP</button>
+        </div>
+        <input id="projectSearch" type="search" placeholder="Search project or stack..." aria-label="Search projects" />
+      </div>
     </section>
     <section class="zoom-section">
       <div id="allProjects" class="cards"></div>
