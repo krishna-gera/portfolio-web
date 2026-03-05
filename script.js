@@ -191,7 +191,9 @@ function setupCopyEmail() {
   const status = document.getElementById('copyStatus');
   if (!copyBtn || !navigator.clipboard) return;
 
-  copyBtn.addEventListener('click', async () => {
+  copyBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     try {
       await navigator.clipboard.writeText(copyBtn.dataset.email || '');
       if (status) status.textContent = 'Email copied to clipboard.';

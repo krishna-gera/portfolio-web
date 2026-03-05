@@ -38,12 +38,13 @@ body {
     radial-gradient(700px 450px at 120% 10%, color-mix(in srgb, var(--accent-2) 20%, transparent), transparent 63%),
     linear-gradient(170deg, var(--bg), var(--bg-2));
   background-size: 120% 120%, 120% 120%, 100% 100%;
-  animation: gradientShift 20s ease-in-out infinite;
+  animation: gradientShift 14s ease-in-out infinite, gradientPulse 18s ease-in-out infinite;
 }
 
 body::before,
 body::after,
-html::before {
+html::before,
+html::after {
   content: "";
   position: fixed;
   z-index: -1;
@@ -95,6 +96,14 @@ html::before {
 @keyframes orbThree {
   0%, 100% { transform: translate(0,0) scale(1); }
   50% { transform: translate(-26px,26px) scale(1.11); }
+}
+@keyframes orbFour {
+  0%, 100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(22px,-18px) scale(1.12); }
+}
+@keyframes gradientPulse {
+  0%, 100% { filter: saturate(100%); }
+  50% { filter: saturate(115%); }
 }
 
 #scrollProgress {
@@ -259,6 +268,29 @@ h2 { font-size: clamp(1.4rem, 3vw, 2.1rem); margin-bottom: 0.6rem; }
 .contact-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
 .contact-card { padding: 1rem; transition: .2s ease; }
 .contact-card:hover { transform: translateY(-4px); }
+
+.email-card { position: relative; }
+.copy-icon-btn {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-strong) 80%, transparent);
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+}
+.copy-icon-btn:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.copy-status { display: inline-block; margin-top: 0.6rem; }
+
 
 .contact-form-wrap { text-align: center; }
 .contact-form-wrap .lead { margin-inline: auto; }
