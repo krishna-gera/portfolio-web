@@ -1,23 +1,50 @@
 const html = document.documentElement;
-const toggle = document.getElementById('themeToggle');
+const themeToggles = document.querySelectorAll('.theme-toggle');
 const scrollProgress = document.getElementById('scrollProgress');
 const toTopBtn = document.getElementById('toTop');
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('mobileSidebar');
+const sidebarClose = document.getElementById('sidebarClose');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 
 function setTheme(theme) {
   html.setAttribute('data-theme', theme);
   localStorage.setItem('theme', theme);
-  if (toggle) toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeToggles.forEach((btn) => {
+    const base = theme === 'dark' ? '☀️' : '🌙';
+    btn.textContent = btn.classList.contains('sidebar-theme') ? `${base} Toggle theme` : base;
+  });
 }
 
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) setTheme(savedTheme);
+setTheme(localStorage.getItem('theme') || 'light');
 
-if (toggle) {
-  toggle.addEventListener('click', () => {
+themeToggles.forEach((btn) => {
+  btn.addEventListener('click', () => {
     const current = html.getAttribute('data-theme') || 'light';
     setTheme(current === 'light' ? 'dark' : 'light');
   });
+});
+
+function openSidebar() {
+  if (!sidebar) return;
+  sidebar.classList.add('open');
+  sidebar.setAttribute('aria-hidden', 'false');
+  sidebarBackdrop?.removeAttribute('hidden');
+  menuToggle?.setAttribute('aria-expanded', 'true');
 }
+
+function closeSidebar() {
+  if (!sidebar) return;
+  sidebar.classList.remove('open');
+  sidebar.setAttribute('aria-hidden', 'true');
+  sidebarBackdrop?.setAttribute('hidden', '');
+  menuToggle?.setAttribute('aria-expanded', 'false');
+}
+
+menuToggle?.addEventListener('click', openSidebar);
+sidebarClose?.addEventListener('click', closeSidebar);
+sidebarBackdrop?.addEventListener('click', closeSidebar);
+document.querySelectorAll('.mobile-nav a').forEach((a) => a.addEventListener('click', closeSidebar));
 
 function handleScrollFx() {
   const scrollTop = window.scrollY;
@@ -27,7 +54,6 @@ function handleScrollFx() {
   if (scrollProgress) scrollProgress.style.width = `${progress}%`;
   if (toTopBtn) toTopBtn.classList.toggle('show', scrollTop > 380);
 }
-
 window.addEventListener('scroll', handleScrollFx, { passive: true });
 handleScrollFx();
 
@@ -37,20 +63,50 @@ if (toTopBtn) {
   });
 }
 
-const observer = new IntersectionObserver((entries) => {
+const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) entry.target.classList.add('in-view');
   });
 }, { threshold: 0.12 });
 
-document.querySelectorAll('.zoom-section').forEach((el) => observer.observe(el));
-
+document.querySelectorAll('.zoom-section').forEach((el) => sectionObserver.observe(el));
 document.getElementById('year')?.append(new Date().getFullYear());
+
+function assignRevealItems(root = document) {
+  const selectors = [
+    '.hero > *', '.stat', '.chip', '.skill-block', '.card', '.contact-card',
+    '.section-head > *', '.project-toolbar > *', '.form > *', '.cta-row > *',
+    'footer > *', '.typing-line', '.lead', 'h1', 'h2', '.eyebrow'
+  ];
+
+  const seen = new Set();
+  selectors.forEach((sel) => {
+    root.querySelectorAll(sel).forEach((el, idx) => {
+      if (!seen.has(el)) {
+        seen.add(el);
+        el.classList.add('reveal-item');
+        el.style.setProperty('--reveal-delay', `${Math.min(idx * 60, 360)}ms`);
+      }
+    });
+  });
+}
+
+const appearObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('reveal-in');
+      appearObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+
+function observeRevealItems(root = document) {
+  root.querySelectorAll('.reveal-item').forEach((item) => appearObserver.observe(item));
+}
 
 function enableCardTilt() {
   if (!window.matchMedia('(pointer:fine)').matches) return;
-  const cards = document.querySelectorAll('.card');
-  cards.forEach((card) => {
+  document.querySelectorAll('.card').forEach((card) => {
     card.addEventListener('mousemove', (e) => {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -66,23 +122,20 @@ function enableCardTilt() {
 }
 
 function animateCounter(element, target, suffix = '') {
-  let current = 0;
   const duration = 1200;
   const start = performance.now();
-
   function update(now) {
     const progress = Math.min((now - start) / duration, 1);
-    current = Math.floor(progress * target);
-    element.textContent = `${current}${suffix}`;
+    element.textContent = `${Math.floor(progress * target)}${suffix}`;
     if (progress < 1) requestAnimationFrame(update);
   }
-
   requestAnimationFrame(update);
 }
 
 function startTyping(words) {
   const el = document.getElementById('typedRole');
   if (!el || !words?.length) return;
+
   let wordIndex = 0;
   let charIndex = 0;
   let deleting = false;
@@ -94,16 +147,15 @@ function startTyping(words) {
 
     let delay = deleting ? 45 : 90;
     if (!deleting && charIndex === currentWord.length) {
-      delay = 1100;
       deleting = true;
+      delay = 1100;
     } else if (deleting && charIndex === 0) {
       deleting = false;
       wordIndex = (wordIndex + 1) % words.length;
-      delay = 300;
+      delay = 280;
     }
     setTimeout(tick, delay);
   }
-
   tick();
 }
 
@@ -120,9 +172,7 @@ function setupProjectFilters() {
     cards.forEach((card) => {
       const category = card.dataset.category || '';
       const hay = `${card.dataset.name || ''} ${card.dataset.stack || ''}`.toLowerCase();
-      const matchCategory = active === 'all' || category === active;
-      const matchSearch = !query || hay.includes(query);
-      card.style.display = matchCategory && matchSearch ? '' : 'none';
+      card.style.display = ((active === 'all' || category === active) && (!query || hay.includes(query))) ? '' : 'none';
     });
   };
 
@@ -133,7 +183,6 @@ function setupProjectFilters() {
       applyFilter();
     });
   });
-
   searchInput?.addEventListener('input', applyFilter);
 }
 
@@ -144,93 +193,13 @@ function setupCopyEmail() {
 
   copyBtn.addEventListener('click', async () => {
     try {
-      const email = copyBtn.dataset.email || '';
-      await navigator.clipboard.writeText(email);
+      await navigator.clipboard.writeText(copyBtn.dataset.email || '');
       if (status) status.textContent = 'Email copied to clipboard.';
-      setTimeout(() => {
-        if (status) status.textContent = '';
-      }, 1800);
+      setTimeout(() => status && (status.textContent = ''), 1800);
     } catch {
       if (status) status.textContent = 'Copy failed. Please copy manually.';
     }
   });
-}
-
-async function loadContent() {
-  try {
-    const res = await fetch('content.json');
-    if (!res.ok) return;
-    const data = await res.json();
-
-    startTyping(data.typingRoles);
-
-    const statsEl = document.getElementById('stats');
-    if (statsEl && Array.isArray(data.stats)) {
-      data.stats.forEach((item) => {
-        const stat = document.createElement('article');
-        stat.className = 'stat';
-        stat.innerHTML = `<strong class="counter" data-target="${item.value}" data-suffix="${item.suffix || ''}">0</strong><span>${item.label}</span>`;
-        statsEl.appendChild(stat);
-      });
-
-      const counters = statsEl.querySelectorAll('.counter');
-      const statObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !entry.target.dataset.animated) {
-            entry.target.dataset.animated = '1';
-            animateCounter(entry.target, Number(entry.target.dataset.target || 0), entry.target.dataset.suffix || '');
-          }
-        });
-      }, { threshold: 0.6 });
-      counters.forEach((counter) => statObserver.observe(counter));
-    }
-
-    const highlightsEl = document.getElementById('highlights');
-    if (highlightsEl) {
-      data.highlights.forEach((h) => {
-        const chip = document.createElement('span');
-        chip.className = 'chip';
-        chip.textContent = h;
-        highlightsEl.appendChild(chip);
-      });
-    }
-
-    const skillsGrid = document.getElementById('skillsGrid');
-    if (skillsGrid) {
-      Object.entries(data.skills).forEach(([category, items]) => {
-        const block = document.createElement('article');
-        block.className = 'skill-block';
-        block.innerHTML = `<h3>${category}</h3><p>${items.join(' · ')}</p>`;
-        skillsGrid.appendChild(block);
-      });
-    }
-
-    const certEl = document.getElementById('certifications');
-    if (certEl && Array.isArray(data.certifications)) {
-      data.certifications.forEach((cert) => {
-        const card = document.createElement('article');
-        card.className = 'card';
-        if (typeof cert === 'string') {
-          card.innerHTML = `<h3 class="cert-provider">Certification</h3><p>${cert}</p>`;
-        } else {
-          card.innerHTML = `<h3 class="cert-provider">${cert.provider}</h3><p>${cert.name}</p>`;
-        }
-        certEl.appendChild(card);
-      });
-    }
-
-    const featured = document.getElementById('featuredProjects');
-    if (featured) renderProjects(featured, data.projects.slice(0, 2));
-
-    const allProjects = document.getElementById('allProjects');
-    if (allProjects) renderProjects(allProjects, data.projects);
-
-    enableCardTilt();
-    setupProjectFilters();
-    setupCopyEmail();
-  } catch (e) {
-    console.error('Failed to load content', e);
-  }
 }
 
 function renderProjects(container, projects) {
@@ -257,4 +226,78 @@ function renderProjects(container, projects) {
   });
 }
 
+async function loadContent() {
+  try {
+    const res = await fetch('content.json');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    startTyping(data.typingRoles);
+
+    const statsEl = document.getElementById('stats');
+    if (statsEl && Array.isArray(data.stats)) {
+      data.stats.forEach((item) => {
+        const stat = document.createElement('article');
+        stat.className = 'stat';
+        stat.innerHTML = `<strong class="counter" data-target="${item.value}" data-suffix="${item.suffix || ''}">0</strong><span>${item.label}</span>`;
+        statsEl.appendChild(stat);
+      });
+
+      const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !entry.target.dataset.animated) {
+            entry.target.dataset.animated = '1';
+            animateCounter(entry.target, Number(entry.target.dataset.target || 0), entry.target.dataset.suffix || '');
+          }
+        });
+      }, { threshold: 0.6 });
+
+      statsEl.querySelectorAll('.counter').forEach((counter) => counterObserver.observe(counter));
+    }
+
+    const highlightsEl = document.getElementById('highlights');
+    if (highlightsEl) data.highlights.forEach((h) => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.textContent = h;
+      highlightsEl.appendChild(chip);
+    });
+
+    const skillsGrid = document.getElementById('skillsGrid');
+    if (skillsGrid) Object.entries(data.skills).forEach(([category, items]) => {
+      const block = document.createElement('article');
+      block.className = 'skill-block';
+      block.innerHTML = `<h3>${category}</h3><p>${items.join(' · ')}</p>`;
+      skillsGrid.appendChild(block);
+    });
+
+    const certEl = document.getElementById('certifications');
+    if (certEl && Array.isArray(data.certifications)) data.certifications.forEach((cert) => {
+      const card = document.createElement('article');
+      card.className = 'card';
+      const provider = typeof cert === 'string' ? 'Certification' : cert.provider;
+      const name = typeof cert === 'string' ? cert : cert.name;
+      const link = typeof cert === 'string' ? 'https://www.credly.com/' : (cert.credentialUrl || 'https://www.credly.com/');
+      card.innerHTML = `<h3 class="cert-provider">${provider}</h3><p>${name}</p><a class="cert-link" href="${link}" target="_blank" rel="noreferrer">View credential ↗</a>`;
+      certEl.appendChild(card);
+    });
+
+    const featured = document.getElementById('featuredProjects');
+    if (featured) renderProjects(featured, data.projects.slice(0, 2));
+
+    const allProjects = document.getElementById('allProjects');
+    if (allProjects) renderProjects(allProjects, data.projects);
+
+    setupProjectFilters();
+    setupCopyEmail();
+    assignRevealItems();
+    observeRevealItems();
+    enableCardTilt();
+  } catch (e) {
+    console.error('Failed to load content', e);
+  }
+}
+
+assignRevealItems();
+observeRevealItems();
 loadContent();

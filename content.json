@@ -68,23 +68,28 @@
   "certifications": [
     {
       "provider": "Google Cloud",
-      "name": "Google Cloud Study Jams 2025 \u2014 Completed 20 Google Skill Boost badges"
+      "name": "Google Cloud Study Jams 2025 \u2014 Completed 20 Google Skill Boost badges",
+      "credentialUrl": "https://www.credly.com/users/krishna-gera"
     },
     {
       "provider": "Walmart Global Tech",
-      "name": "Advanced Software Engineering Job Simulation"
+      "name": "Advanced Software Engineering Job Simulation",
+      "credentialUrl": "https://www.credly.com/users/krishna-gera"
     },
     {
       "provider": "LearnTube.ai",
-      "name": "Introduction to Python Advanced"
+      "name": "Introduction to Python Advanced",
+      "credentialUrl": "https://www.credly.com/users/krishna-gera"
     },
     {
       "provider": "IEEE",
-      "name": "GitXplore (Git & GitHub)"
+      "name": "GitXplore (Git & GitHub)",
+      "credentialUrl": "https://www.credly.com/users/krishna-gera"
     },
     {
       "provider": "Central Queensland University",
-      "name": "Business Etiquette & Communication"
+      "name": "Business Etiquette & Communication",
+      "credentialUrl": "https://www.credly.com/users/krishna-gera"
     }
   ],
   "projects": [
