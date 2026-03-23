@@ -7,9 +7,6 @@
   <meta name="description" content="Contact Krishna Gera for internships, project collaboration, and hiring opportunities." />
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
-  <style>
-    .contact-grid.div{display: flex;}
-  </style>
 </head>
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
@@ -43,12 +40,29 @@
       <h1>Let’s Work Together</h1>
       <p class="lead">I’m open to DevOps internships, freelance work, and startup collaboration.</p>
       <div class="contact-grid">
-        <a class="contact-card" href="mailto:krishnagera.work@gmail.com">
-          <div><h3>Email</h3>
-          <button class="btn btn-secondary" id="copyEmail" data-email="krishnagera.work@gmail.com">Copy email address</button></div>
-          <p>krishnagera.work@gmail.com</p>
-          
-          <span id="copyStatus" class="meta"></span>
+        <a class="contact-card" href="mailto:krishnagera.work@gmail.com" 
+           style="display:flex; flex-direction:column; gap:10px; text-decoration:none;">
+      
+          <!-- Top Row -->
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            
+            <h3 style="margin:0;">Email</h3>
+      
+            <!-- Copy Icon Button -->
+            <span id="copyEmail" 
+                  data-email="krishnagera.work@gmail.com"
+                  style="cursor:pointer; font-size:18px;" 
+                  title="Copy email">
+              📋
+            </span>
+          </div>
+      
+          <!-- Email Text -->
+          <p style="margin:0;">krishnagera.work@gmail.com</p>
+      
+          <!-- Status -->
+          <span id="copyStatus" class="meta" style="font-size:12px;"></span>
+      
         </a>
         <a class="contact-card" target="_blank" rel="noreferrer" href="https://github.com/krishna-gera">
           <h3>GitHub</h3>
