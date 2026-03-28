@@ -1,10 +1,6 @@
 {
   "highlights": [
-    "DevOps learner",
-    "UI/UX designer",
-    "Machine learning explorer",
-    "Flask + PostgreSQL builder",
-    "Based in Dehradun"
+    "DevOps learner"
   ],
   "stats": [
     {
@@ -40,120 +36,19 @@
     "Languages": [
       "Python",
       "C",
-      "Dart",
       "HTML",
       "CSS",
       "JavaScript (Basic)",
       "SQL"
     ],
     "Backend & Tools": [
-      "Flask",
-      "REST APIs",
       "Git",
       "GitHub"
     ],
     "Databases": [
-      "MySQL",
-      "PostgreSQL",
-      "MongoDB"
-    ],
-    "Systems & DevOps": [
-      "Google Cloud Platform",
-      "AWS EC2",
-      "Docker (Basic)",
-      "Kubernetes (Basic)",
-      "Linux"
+      "MySQL"
     ]
-  },
-  "certifications": [
-    {
-      "provider": "Google Cloud",
-      "name": "Google Cloud Study Jams 2025 \u2014 Completed 20 Google Skill Boost badges",
-      "credentialUrl": "https://media.licdn.com/dms/image/v2/D4D2DAQGmkzWFXe7a3Q/profile-treasury-image-shrink_800_800/B4DZqiluRzGgAc-/0/1763664391472?e=1773345600&v=beta&t=Ditl5ubbsJQCG1t3KpffVoR96xFCk7pcf4e4x-yMYP4"
-    },
-    {
-      "provider": "Walmart Global Tech",
-      "name": "Advanced Software Engineering Job Simulation",
-      "credentialUrl": "https://www.theforage.com/completion-certificates/prBZoAihniNijyD6d/oX6f9BbCL9kJDJzfg_prBZoAihniNijyD6d_697afc4ad3ca09d0a4c66584_1769697741337_completion_certificate.pdf"
-    },
-    {
-      "provider": "LearnTube.ai",
-      "name": "Introduction to Python Advanced",
-      "credentialUrl": "https://learntube.ai/verify/certificate/d78381d5-e9ad-425b-bd8d-81f39fa79c07"
-    },
-    {
-      "provider": "IEEE",
-      "name": "GitXplore (Git & GitHub)",
-      "credentialUrl": "https://www.credly.com/users/krishna-gera"
-    },
-    {
-      "provider": "Central Queensland University",
-      "name": "Business Etiquette & Communication",
-      "credentialUrl": "https://www.futurelearn.com/certificates/2nf2q1s"
-    }
-  ],
-  "projects": [
-    {
-      "name": "Artist Dashboard",
-      "category": "full-stack",
-      "summary": "A full-stack Flask + PostgreSQL web app for managing artists, projects, collaborations, rankings, and analytics in a role-based system.",
-      "stack": [
-        "Python",
-        "Flask",
-        "PostgreSQL (Neon)",
-        "HTML",
-        "CSS",
-        "JavaScript"
-      ],
-      "role": "Fully designed and developed by Krishna Gera.",
-      "github": "https://github.com/krishna-gera/artist-dashboard",
-      "live": "https://artist-dashboard-pied.vercel.app/"
-    },
-    {
-      "name": "Movie Revenue Predictor",
-      "category": "ml",
-      "summary": "ML-powered revenue prediction app evaluating 20+ parameters with smart conditional fields and interactive visual behavior.",
-      "stack": [
-        "Flask",
-        "scikit-learn",
-        "NumPy",
-        "Pandas",
-        "JavaScript",
-        "CSS"
-      ],
-      "role": "Fully designed and developed by Krishna Gera.",
-      "github": "https://github.com/krishna-gera/movie-revenue-predictiond",
-      "live": "https://movie-revenue-prediction-5uol.onrender.com/"
-    },
-    {
-      "name": "Room Booking & Approval System",
-      "category": "automation",
-      "summary": "An internal application for booking workflows and approval management (currently not deployed).",
-      "stack": [
-        "Flutter(Dart)",
-        "Supabase (PostgreSQL)"
-      ],
-      "role": "Built to streamline booking requests and admin approvals.",
-      "github": "",
-      "live": ""
-    },
-    {
-      "name": "Dream Productivity Project (WIP)",
-      "category": "wip",
-      "summary": "A major ongoing build focused on personal productivity and intelligent workflow management.",
-      "stack": [
-        "Flutter(Dart)",
-        "Google Cloud Platform",
-        "PostgreSQL",
-        "AI/ML APIs",
-        "Automation tools",
-        "Integration with third-party services",
-        "Custom APIs",
-        "ML Model Training & Deployment"
-      ],
-      "role": "Current flagship project under development.",
-      "github": "",
-      "live": ""
-    }
-  ]
+  }
+  
+  
 }

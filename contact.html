@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact | Krishna Gera</title>
-  <meta name="description"
-    content="Contact Krishna Gera for internships, project collaboration, and hiring opportunities." />
+  <title>Contact | Atul Kumar</title>
+  <meta name="description" content="Contact Atul Kumar for internships, project collaboration, and hiring opportunities." />
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
-
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="index.html">Krishna Gera</a>
+    <a class="brand" href="index.html">Atul Kumar</a>
     <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav class="desktop-nav">
       <a href="index.html">Home</a>
@@ -30,9 +26,9 @@
         <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
       </div>
       <nav class="mobile-nav">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="contact.html" class="active">Contact</a>
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="contact.html" class="active">Contact</a>
       </nav>
       <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
     </aside>
@@ -44,31 +40,15 @@
       <h1>Let’s Work Together</h1>
       <p class="lead">I’m open to DevOps internships, freelance work, and startup collaboration.</p>
       <div class="contact-grid">
-        <a class="contact-card" href="mailto:krishnagera.work@gmail.com"
-          style="display:flex; flex-direction:column; gap:10px; text-decoration:none;">
-
-          <!-- Top Row -->
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-
-            <h3 style="margin:0;">Email</h3>
-
-            <!-- Copy Icon Button -->
-            <span id="copyEmail" data-email="krishnagera.work@gmail.com" style="cursor:pointer; font-size:18px;"
-              title="Copy email">
-              📋
-            </span>
-          </div>
-
-          <!-- Email Text -->
-          <p style="margin:0;">krishnagera.work@gmail.com</p>
-
-          <!-- Status -->
-          <span id="copyStatus" class="meta" style="font-size:12px;"></span>
-
+        <a class="contact-card" href="mailto:captianindia681@gmail.com">
+          <h3>Email</h3>
+          <p>captianindia681@gmail.com</p>
+          <button class="btn btn-secondary" id="copyEmail" data-email="captianindia681@gmail.com">Copy email address</button>
+          <span id="copyStatus" class="meta"></span>
         </a>
-        <a class="contact-card" target="_blank" rel="noreferrer" href="https://github.com/krishna-gera">
+        <a class="contact-card" target="_blank" rel="noreferrer" href="https://github.com/Atul707">
           <h3>GitHub</h3>
-          <p>@krishna-gera</p>
+          <p>@Atul707</p>
         </a>
         <a class="contact-card" target="_blank" rel="noreferrer" href="https://www.linkedin.com/in/krishna-gera/">
           <h3>LinkedIn</h3>
@@ -80,11 +60,11 @@
     <section class="zoom-section contact-form-wrap">
       <h2>Get In Touch</h2>
       <p class="lead">Share your idea, internship opportunity, or collaboration request.</p>
-      <form class="form" id="contact-form">
-        <label>Name <input type="text" name="name" id="name" required /></label>
-        <label>Email <input type="email" name="email" id="email" required /></label>
-        <label>Message <textarea name="message" id="message" rows="5" required></textarea></label> <button class="btn"
-          type="submit">Send</button>
+      <form class="form" action="mailto:captianindia681@gmail.com" method="post" enctype="text/plain">
+        <label>Name <input type="text" name="name" required /></label>
+        <label>Email <input type="email" name="email" required /></label>
+        <label>Message <textarea name="message" rows="5" required></textarea></label>
+        <button class="btn" type="submit">Send</button>
       </form>
     </section>
   </main>
@@ -92,45 +72,5 @@
   <footer>
     <p>Response time: Usually within 24 hours.</p>
   </footer>
-  <script>
-    const { createClient } = supabase;
-    const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
-    const supabase2 = createClient(supabaseUrl, supabaseKey);
-
-    document.getElementById("copyEmail").addEventListener("click", function () {
-      const email = this.getAttribute("data-email");
-      navigator.clipboard.writeText(email)
-        .then(() => {
-          document.getElementById("copyStatus").textContent = "Copied!";
-          setTimeout(() => {
-            document.getElementById("copyStatus").textContent = "";
-          }, 2000);
-        })
-        .catch(err => {
-          document.getElementById("copyStatus").textContent = "Failed to copy";
-        });
-    });
-
-    document.getElementById("contact-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const message = document.getElementById("message").value;
-
-      const { data, error } = await supabase2
-        .from("contact")
-        .insert([{ name, email, message }]);
-
-      if (error) {
-        alert("Error: " + error.message);
-      } else {
-        alert("Message sent!");
-        e.target.reset();
-      }
-    });
-  </script>
 </body>
-
 </html>
