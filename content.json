@@ -4,24 +4,14 @@
   ],
   "stats": [
     {
-      "label": "Major Projects",
-      "value": 4,
-      "suffix": "+"
-    },
-    {
       "label": "Technologies Explored",
-      "value": 25,
+      "value": 8,
       "suffix": "+"
     },
     {
       "label": "Core Focus Areas",
-      "value": 3,
+      "value": 1,
       "suffix": ""
-    },
-    {
-      "label": "Github Repo",
-      "value": 35,
-      "suffix": "+"
     }
   ],
   "typingRoles": [
