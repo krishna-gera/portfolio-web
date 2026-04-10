@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Builder | Krishna Gera</title>
+  <meta name="description"
+    content="Build your professional portfolio with Krishna Gera's Portfolio Builder tool." />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+
+<body>
+  <div id="scrollProgress" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="index.html">Krishna Gera</a>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
+  </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+  <main class="page">
+    <section class="zoom-section">
+      <h1>Portfolio Builder</h1>
+      <p class="lead">Create your professional portfolio in minutes.</p>
+    </section>
+
+<div class="app">
+  <div class="card">
+
+    <div class="header">
+      <h1>Create Your Portfolio</h1>
+      <p>Build a professional portfolio in minutes</p>
+    </div>
+
+    <!-- STEPPER -->
+    <div class="stepper">
+      <div class="step-indicator active" onclick="goToStep(0)">1<span>Basic</span></div>
+      <div class="step-indicator" onclick="goToStep(1)">2<span>About</span></div>
+      <div class="step-indicator" onclick="goToStep(2)">3<span>Skills</span></div>
+      <div class="step-indicator" onclick="goToStep(3)">4<span>Projects</span></div>
+      <div class="step-indicator" onclick="goToStep(4)">5<span>Career</span></div>
+    </div>
+
+    <form id="form">
+
+      <!-- STEP 1 -->
+      <div class="step active">
+        <h2>Basic Info</h2>
+
+        <div class="username-group">
+          <input id="usernameInput" placeholder="Choose Username">
+          <button type="button" onclick="checkUsername()">Check</button>
+        </div>
+        <p id="usernameStatus" class="status"></p>
+
+        <input placeholder="Full Name">
+        <input placeholder="Role">
+        <input placeholder="Tagline">
+
+        <label class="label">Profile Photo</label>
+        <input type="file">
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="step">
+        <h2>About</h2>
+        <textarea placeholder="Tell about yourself"></textarea>
+        <input placeholder="Location">
+        <select>
+          <option>Student</option>
+          <option>Freelancer</option>
+          <option>Working</option>
+        </select>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="step">
+        <h2>Skills & Focus</h2>
+
+        <label>Skills</label>
+        <div class="tag-input" id="skillsBox">
+          <input id="skillsInput" placeholder="Type & press Enter">
+        </div>
+
+        <label>Focus Areas</label>
+        <div class="tag-input" id="focusBox">
+          <input id="focusInput" placeholder="Type & press Enter">
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="step">
+        <h2>Projects</h2>
+        <div id="projectsContainer"></div>
+        <button type="button" class="add" onclick="addProject()">+ Add Project</button>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step">
+        <h2>Experience & Certifications</h2>
+
+        <h3>Experience</h3>
+        <div id="experienceContainer"></div>
+        <button type="button" class="add" onclick="addExperience()">+ Add Experience</button>
+
+        <h3>Certifications</h3>
+        <div id="certContainer"></div>
+        <button type="button" class="add" onclick="addCert()">+ Add Certification</button>
+      </div>
+
+      <!-- NAV -->
+      <div class="nav">
+        <button type="button" onclick="prevStep()">Back</button>
+        <button id="nextBtn" type="button" onclick="nextStep()">Next</button>
+        <button id="submitBtn" type="submit" style="display:none;">🚀 Generate Portfolio</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+  </main>
+
+  <footer>
+    <p>Build your portfolio with ease.</p>
+  </footer>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: white;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(30, 41, 59, 0.9);
+  padding: 25px;
+  border-radius: 16px;
+}
+
+.header { text-align: center; margin-bottom: 20px; }
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step-indicator {
+  cursor: pointer;
+  padding: 6px;
+  background: #334155;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.step-indicator span {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.step-indicator.active {
+  background: #38bdf8;
+  color: black;
+}
+
+.step { display: none; }
+.step.active { display: block; }
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+  background: #020617;
+  color: white;
+}
+
+textarea { height: 90px; }
+
+.label { color: #94a3b8; }
+
+.tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: #020617;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.tag-chip {
+  background: #38bdf8;
+  color: black;
+  padding: 6px 10px;
+  border-radius: 20px;
+  display: flex;
+  gap: 6px;
+}
+
+.tag-chip span { cursor: pointer; }
+
+.username-group {
+  display: flex;
+  gap: 10px;
+}
+
+.status {
+  font-size: 13px;
+}
+
+.status.success { color: #22c55e; }
+.status.error { color: #ef4444; }
+.status.loading { color: #38bdf8; }
+
+.add {
+  background: #1e293b;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #38bdf8;
+  cursor: pointer;
+}
+
+button:hover { background: #0ea5e9; }
+
+@media (max-width: 600px) {
+  .card { padding: 15px; }
+}
+</style>
+
+<script>
+const { createClient } = supabase;
+const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
+const supabase2 = createClient(supabaseUrl, supabaseKey);
+
+let step = 0;
+let isUsernameValid = false;
+
+const steps = document.querySelectorAll(".step");
+const indicators = document.querySelectorAll(".step-indicator");
+
+function updateStep() {
+  steps.forEach((s, i) => {
+    s.classList.toggle("active", i === step);
+    indicators[i].classList.toggle("active", i === step);
+  });
+
+  nextBtn.style.display = step === steps.length - 1 ? "none" : "block";
+  submitBtn.style.display = step === steps.length - 1 ? "block" : "none";
+}
+
+function nextStep() {
+  if (step === 0 && !isUsernameValid) {
+    alert("Please choose a valid username first");
+    return;
+  }
+  if (step < steps.length - 1) step++;
+  updateStep();
+}
+
+function prevStep() { if (step > 0) step--; updateStep(); }
+function goToStep(i) { step = i; updateStep(); }
+
+updateStep();
+
+
+// USERNAME CHECK
+async function checkUsername() {
+  const username = usernameInput.value.trim();
+  const status = usernameStatus;
+
+  if (!username) {
+    status.innerText = "Enter username";
+    status.className = "status error";
+    return;
+  }
+
+  status.innerText = "Checking...";
+  status.className = "status loading";
+
+  await new Promise(r => setTimeout(r, 800));
+
+  const taken = ["admin", "test", "krishna"];
+
+  if (taken.includes(username.toLowerCase())) {
+    status.innerText = "Username taken ❌";
+    status.className = "status error";
+    isUsernameValid = false;
+  } else {
+    status.innerText = "Username available ✅";
+    status.className = "status success";
+    isUsernameValid = true;
+  }
+}
+
+
+// TAG INPUT
+function setupTag(inputId, boxId) {
+  const input = document.getElementById(inputId);
+  const box = document.getElementById(boxId);
+
+  input.addEventListener("keypress", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const val = input.value.trim();
+      if (!val) return;
+
+      const chip = document.createElement("div");
+      chip.className = "tag-chip";
+      chip.innerHTML = `${val} <span>x</span>`;
+      chip.querySelector("span").onclick = () => chip.remove();
+
+      box.insertBefore(chip, input);
+      input.value = "";
+    }
+  });
+}
+
+setupTag("skillsInput", "skillsBox");
+setupTag("focusInput", "focusBox");
+
+
+// PROJECTS
+let featured = 0;
+
+function addProject() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Project Title">
+    <textarea placeholder="Description"></textarea>
+    <input placeholder="Tech Stack">
+    <label><input type="checkbox" onchange="limitFeatured(this)"> Featured</label>
+  `;
+
+  projectsContainer.appendChild(div);
+}
+
+function limitFeatured(el) {
+  if (el.checked) {
+    featured++;
+    if (featured > 4) {
+      alert("Max 4 featured allowed");
+      el.checked = false;
+      featured--;
+    }
+  } else {
+    featured--;
+  }
+}
+
+
+// EXPERIENCE
+function addExperience() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Role / Degree">
+    <input placeholder="Company / College">
+    <input placeholder="Duration">
+    <textarea placeholder="Description"></textarea>
+  `;
+
+  experienceContainer.appendChild(div);
+}
+
+
+// CERT
+function addCert() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Certificate Name">
+    <input placeholder="Issuer">
+    <input placeholder="Year">
+  `;
+
+  certContainer.appendChild(div);
+}
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Collect basic data for demo
+  const username = document.getElementById("usernameInput").value;
+  const name = document.querySelector('input[placeholder="Full Name"]').value;
+  const role = document.querySelector('input[placeholder="Role"]').value;
+  const tagline = document.querySelector('input[placeholder="Tagline"]').value;
+
+  const data = { username, name, role, tagline };
+
+  const { error } = await supabase2
+    .from("portfolios")
+    .insert([data]);
+
+  if (error) {
+    alert("Error: " + error.message);
+  } else {
+    alert("Portfolio created!");
+    e.target.reset();
+  }
+});
+</script>
+</body>
+</html>
