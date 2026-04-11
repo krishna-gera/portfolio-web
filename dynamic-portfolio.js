@@ -14,6 +14,7 @@ function createSupabaseClient() {
 function setStatus(type, title, message) {
   if (!portfolioStatus) return;
   portfolioStatus.className = `zoom-section portfolio-state state-${type}`;
+  portfolioStatus.classList.add('in-view');
   portfolioStatus.innerHTML = `<h1>${title}</h1><p class="lead">${message}</p>`;
 }
 
@@ -114,6 +115,7 @@ function transformPortfolioData(raw) {
 function createSection(title, sectionClass = '') {
   const section = document.createElement('section');
   section.className = `zoom-section ${sectionClass}`.trim();
+  section.classList.add('in-view');
 
   const heading = document.createElement('h2');
   heading.textContent = title;
@@ -137,6 +139,7 @@ function renderHero(data) {
   if (!data.profile) return null;
   const hero = document.createElement('section');
   hero.className = 'hero zoom-section portfolio-generated';
+  hero.classList.add('in-view');
 
   const textWrap = document.createElement('div');
   textWrap.innerHTML = `
@@ -323,6 +326,7 @@ function renderPortfolio(data) {
   if (rendered.size === 0) {
     const emptyState = document.createElement('section');
     emptyState.className = 'zoom-section portfolio-state state-empty';
+    emptyState.classList.add('in-view');
     emptyState.innerHTML = '<h1>No portfolio data available</h1><p class="lead">This user has no renderable sections yet.</p>';
     portfolioRoot.appendChild(emptyState);
   }

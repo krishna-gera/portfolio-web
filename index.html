@@ -452,7 +452,7 @@ function hideGenerationModal() {
 }
 
 function buildPortfolioUrl(username) {
-  return `${window.location.origin}/v/${encodeURIComponent(username)}`;
+  return `${window.location.origin}/dynamic-portfolio.html?username=${encodeURIComponent(username)}`;
 }
 
 closeModalBtn.addEventListener("click", hideGenerationModal);
