@@ -21,6 +21,7 @@
       <a href="index.html">Home</a>
       <a href="projects.html">Projects</a>
       <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+      <a href="dynamic-portfolio.html">Portfolio Viewer</a>
       <a href="contact.html">Contact</a>
     </nav>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
@@ -34,6 +35,7 @@
         <a href="index.html">Home</a>
         <a href="projects.html">Projects</a>
         <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+        <a href="dynamic-portfolio.html">Portfolio Viewer</a>
         <a href="contact.html">Contact</a>
       </nav>
       <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
@@ -674,8 +676,11 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       }]);
     if (settingsError) throw settingsError;
 
-    alert("Portfolio created successfully!");
-    
+    const dynamicPortfolioPath = 'dynamic-portfolio.html';
+    const dynamicPortfolioUrl = `${window.location.origin}${window.location.pathname.replace('portfolio-builder.html', dynamicPortfolioPath)}?username=${encodeURIComponent(username)}`;
+
+    alert(`Portfolio created successfully!\nView: ${dynamicPortfolioUrl}`);
+
     // Reset form
     e.target.reset();
     document.getElementById('skillsContainer').innerHTML = '';
