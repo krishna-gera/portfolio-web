@@ -1,101 +1,855 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Krishna Gera | DevOps, UI/UX & ML Portfolio</title>
-  <meta name="description" content="Portfolio of Krishna Gera — DevOps-focused builder with UI/UX design and ML project experience. Available for internships and collaborations." />
-  <meta name="keywords" content="Krishna Gera, DevOps Internship, UI UX, Flask, Portfolio, Machine Learning" />
-  <meta property="og:title" content="Krishna Gera Portfolio" />
-  <meta property="og:description" content="DevOps-focused portfolio with projects in full-stack and machine learning." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://krishnagera.com" />
-  <meta property="og:image" content="photos/myprofile.png" />
+  <title>Portfolio Builder | Krishna Gera</title>
+  <meta name="description"
+    content="Build your professional portfolio with Krishna Gera's Portfolio Builder tool." />
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
+
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="index.html">Krishna Gera</a>
-    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
-    <nav class="desktop-nav">
-      <a href="index.html" class="active">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="portfolio-builder.html">Portfolio Builder</a>
-      <a href="contact.html">Contact</a>
-    </nav>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
-
-    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
-      <div class="sidebar-head">
-        <strong>Menu</strong>
-        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
-      </div>
-      <nav class="mobile-nav">
-      <a href="index.html" class="active">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="portfolio-builder.html">Portfolio Builder</a>
-      <a href="contact.html">Contact</a>
-      </nav>
-      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
-    </aside>
   </header>
-  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
-  <main>
-    <section class="hero zoom-section">
-      <div>
-        <p class="eyebrow">Open to DevOps Internships</p>
-        <h1>Building reliable products with <span>DevOps</span>, <span>UI/UX</span>, and <span>ML</span>.</h1>
-        <p class="lead">I’m Krishna Gera from Dehradun, focused on shipping practical systems and polished interfaces. I build with Flask, modern deployment platforms, and design-first thinking.</p>
-        <p class="typing-line">Currently exploring: <span id="typedRole"></span></p>
-        <div class="cta-row">
-          <a class="btn" href="contact.html">Contact Me</a>
-          <a class="btn btn-secondary" href="https://raw.githubusercontent.com/krishna-gera/my-portfolio/main/Krishna_Gera_CV.pdf" download>Download Resume</a>
+  <main class="page">
+    <section class="zoom-section">
+      <h1>Portfolio Builder</h1>
+      <p class="lead">Create your professional portfolio in minutes.</p>
+    </section>
+
+<div class="app">
+  <div class="card">
+
+    <div class="header">
+      <h1>Create Your Portfolio</h1>
+      <p>Build a professional portfolio in minutes</p>
+    </div>
+
+    <!-- STEPPER -->
+    <div class="stepper">
+      <div class="step-indicator active" onclick="goToStep(0)">1<span>Basic</span></div>
+      <div class="step-indicator" onclick="goToStep(1)">2<span>About</span></div>
+      <div class="step-indicator" onclick="goToStep(2)">3<span>Skills</span></div>
+      <div class="step-indicator" onclick="goToStep(3)">4<span>Projects</span></div>
+      <div class="step-indicator" onclick="goToStep(4)">5<span>Career</span></div>
+      <div class="step-indicator" onclick="goToStep(5)">6<span>Social</span></div>
+    </div>
+
+    <form id="form">
+
+      <!-- STEP 1 -->
+      <div class="step active">
+        <h2>Basic Info</h2>
+
+        <div class="username-group">
+          <input id="usernameInput" placeholder="Choose Username">
+          <button type="button" onclick="checkUsername()">Check</button>
         </div>
+        <p id="usernameStatus" class="status"></p>
+
+        <input placeholder="Full Name">
+        <input placeholder="Role">
+        <input placeholder="Tagline">
+
+        <label class="label">Profile Photo</label>
+        <input type="file">
       </div>
-      <img src="photos/myprofile.png" alt="Portrait of Krishna Gera" class="profile" />
-    </section>
 
-    <section class="stats zoom-section" id="stats"></section>
-
-    <section class="about zoom-section">
-      <h2>About</h2>
-      <p>I am a product-minded developer who combines software development with strong design thinking. I build practical applications using Flask, PostgreSQL, and modern deployment platforms while currently exploring DevOps tools, scalable systems, and machine learning.</p>
-      <div class="chips" id="highlights"></div>
-    </section>
-
-    <section class="skills zoom-section">
-      <h2>Skills</h2>
-      <div class="skills-grid" id="skillsGrid"></div>
-    </section>
-
-    <section class="featured zoom-section">
-      <div class="section-head">
-        <h2>Featured Projects</h2>
-        <a href="projects.html">View all →</a>
+      <!-- STEP 2 -->
+      <div class="step">
+        <h2>About</h2>
+        <textarea placeholder="Tell about yourself"></textarea>
+        <input placeholder="Location">
+        <select>
+          <option>Student</option>
+          <option>Freelancer</option>
+          <option>Working</option>
+        </select>
       </div>
-      <div id="featuredProjects" class="cards"></div>
-    </section>
 
-    <section class="certs zoom-section">
-      <div class="section-head">
-        <h2>Certifications</h2>
+      <!-- STEP 3 -->
+      <div class="step">
+        <h2>Skills & Focus</h2>
+
+        <label>Skills</label>
+        <div id="skillsContainer"></div>
+        <button type="button" class="add" onclick="addSkill()">+ Add Skill</button>
+
+        <label>Focus Areas</label>
+        <div id="focusContainer"></div>
+        <button type="button" class="add" onclick="addFocusArea()">+ Add Focus Area</button>
       </div>
-      <div class="cards" id="certifications"></div>
-    </section>
+
+      <!-- STEP 4 -->
+      <div class="step">
+        <h2>Projects</h2>
+        <div id="projectsContainer"></div>
+        <button type="button" class="add" onclick="addProject()">+ Add Project</button>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="step">
+        <h2>Experience & Certifications</h2>
+
+        <h3>Experience</h3>
+        <div id="experienceContainer"></div>
+        <button type="button" class="add" onclick="addExperience()">+ Add Experience</button>
+
+        <h3>Certifications</h3>
+        <div id="certContainer"></div>
+        <button type="button" class="add" onclick="addCert()">+ Add Certification</button>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step">
+        <h2>Social Links</h2>
+        <input placeholder="GitHub URL">
+        <input placeholder="LinkedIn URL">
+        <input placeholder="Twitter URL">
+        <input placeholder="Portfolio URL">
+      </div>
+
+      <!-- NAV -->
+      <div class="nav">
+        <button type="button" onclick="prevStep()">Back</button>
+        <button id="nextBtn" type="button" onclick="nextStep()">Next</button>
+        <button id="submitBtn" type="submit" style="display:none;">🚀 Generate Portfolio</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
   </main>
 
-  <button id="toTop" aria-label="Back to top">↑</button>
+  <div id="generationModal" class="generation-modal" hidden>
+    <div class="generation-card" role="dialog" aria-modal="true" aria-live="polite">
+      <div id="loadingState">
+        <div class="spinner" aria-hidden="true"></div>
+        <h2>Generating your portfolio</h2>
+        <p id="loadingText" class="lead">Setting up your portfolio…</p>
+        <div class="progress-wrap" aria-label="Generation progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <p id="progressValue" class="meta">0%</p>
+      </div>
+
+      <div id="successState" hidden>
+        <h2>✅ Your portfolio is ready!</h2>
+        <p class="lead">Your generated portfolio link:</p>
+        <div id="generatedUrl" class="url-box"></div>
+        <div class="success-actions">
+          <button id="copyUrlBtn" type="button">📋 Copy URL</button>
+          <button id="openUrlBtn" type="button">🚀 Open Portfolio</button>
+          <button id="closeModalBtn" type="button" class="add">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <footer>
-    <p>© <span id="year"></span> Krishna Gera · Dehradun, India</p>
-    <div class="socials">
-      <a href="https://github.com/krishna-gera" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="https://www.linkedin.com/in/krishna-gera/" target="_blank" rel="noreferrer">LinkedIn</a>
-      <a href="contact.html">Email</a>
-    </div>
+    <p>Build your portfolio with ease.</p>
   </footer>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.site-header {
+  justify-content: space-between;
+}
+
+.desktop-theme {
+  display: inline-block !important;
+}
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface-strong);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.header { text-align: center; margin-bottom: 20px; }
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.step-indicator {
+  cursor: pointer;
+  padding: 6px;
+  background: var(--bg-2);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.step-indicator span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.step-indicator.active {
+  background: var(--accent);
+  color: white;
+}
+
+.step { display: none; }
+.step.active { display: block; }
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+textarea { height: 90px; }
+
+.label { color: var(--muted); }
+
+.tag-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--surface);
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.tag-chip {
+  background: var(--accent);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  display: flex;
+  gap: 6px;
+}
+
+.tag-chip span { cursor: pointer; }
+
+.username-group {
+  display: flex;
+  gap: 10px;
+}
+
+.status {
+  font-size: 13px;
+}
+
+.status.success { color: #22c55e; }
+.status.error { color: #ef4444; }
+.status.loading { color: var(--accent); }
+
+.add {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
+
+.generation-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 24, 0.56);
+  display: grid;
+  place-items: center;
+  z-index: 80;
+  padding: 1rem;
+}
+
+.generation-card {
+  width: min(560px, 94vw);
+  border-radius: 18px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 52px;
+  height: 52px;
+  border: 4px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 0.9rem;
+  animation: spin 0.9s linear infinite;
+}
+
+.progress-wrap {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  overflow: hidden;
+  margin-top: 0.8rem;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(95deg, var(--accent), var(--accent-2));
+  transition: width 0.28s ease;
+}
+
+.url-box {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.8rem;
+  word-break: break-all;
+  margin-bottom: 1rem;
+}
+
+.success-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .card { padding: 15px; }
+  .success-actions button { width: 100%; }
+}
+</style>
+
+<script>
+const { createClient } = supabase;
+const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
+const supabase2 = createClient(supabaseUrl, supabaseKey);
+
+let step = 0;
+let isUsernameValid = false;
+
+const steps = document.querySelectorAll(".step");
+const indicators = document.querySelectorAll(".step-indicator");
+const generationModal = document.getElementById("generationModal");
+const loadingState = document.getElementById("loadingState");
+const successState = document.getElementById("successState");
+const loadingText = document.getElementById("loadingText");
+const progressBar = document.getElementById("progressBar");
+const progressValue = document.getElementById("progressValue");
+const generatedUrl = document.getElementById("generatedUrl");
+const copyUrlBtn = document.getElementById("copyUrlBtn");
+const openUrlBtn = document.getElementById("openUrlBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+
+let progressInterval = null;
+let generationProgress = 0;
+const loadingMessages = [
+  "Setting up your portfolio…",
+  "Designing your layout…",
+  "Finalizing details…"
+];
+
+function updateGenerationProgress(value) {
+  progressBar.style.width = `${value}%`;
+  progressValue.textContent = `${value}%`;
+}
+
+function showGenerationLoading() {
+  generationProgress = 0;
+  generationModal.hidden = false;
+  loadingState.hidden = false;
+  successState.hidden = true;
+  updateGenerationProgress(0);
+  loadingText.textContent = loadingMessages[0];
+
+  if (progressInterval) clearInterval(progressInterval);
+  progressInterval = setInterval(() => {
+    if (generationProgress >= 92) return;
+    generationProgress += Math.max(2, Math.floor((92 - generationProgress) / 8));
+    updateGenerationProgress(generationProgress);
+
+    if (generationProgress < 35) loadingText.textContent = loadingMessages[0];
+    else if (generationProgress < 75) loadingText.textContent = loadingMessages[1];
+    else loadingText.textContent = loadingMessages[2];
+  }, 240);
+}
+
+function showGenerationSuccess(url) {
+  if (progressInterval) clearInterval(progressInterval);
+  generationProgress = 100;
+  updateGenerationProgress(100);
+
+  setTimeout(() => {
+    loadingState.hidden = true;
+    successState.hidden = false;
+    generatedUrl.textContent = url;
+    copyUrlBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        copyUrlBtn.textContent = "✅ Copied";
+        setTimeout(() => { copyUrlBtn.textContent = "📋 Copy URL"; }, 1300);
+      } catch {
+        copyUrlBtn.textContent = "Copy failed";
+      }
+    };
+    openUrlBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+  }, 360);
+}
+
+function hideGenerationModal() {
+  if (progressInterval) clearInterval(progressInterval);
+  generationModal.hidden = true;
+}
+
+function buildPortfolioUrl(username) {
+  return `${window.location.origin}/v/${encodeURIComponent(username)}`;
+}
+
+closeModalBtn.addEventListener("click", hideGenerationModal);
+
+function updateStep() {
+  steps.forEach((s, i) => {
+    s.classList.toggle("active", i === step);
+    indicators[i].classList.toggle("active", i === step);
+  });
+
+  nextBtn.style.display = step === steps.length - 1 ? "none" : "block";
+  submitBtn.style.display = step === steps.length - 1 ? "block" : "none";
+}
+
+function nextStep() {
+  if (step === 0 && !isUsernameValid) {
+    alert("Please choose a valid username first");
+    return;
+  }
+  if (step < steps.length - 1) step++;
+  updateStep();
+}
+
+function prevStep() { if (step > 0) step--; updateStep(); }
+function goToStep(i) { step = i; updateStep(); }
+
+updateStep();
+
+
+// USERNAME CHECK
+async function checkUsername() {
+  const username = usernameInput.value.trim();
+  const status = usernameStatus;
+
+  if (!username) {
+    status.innerText = "Enter username";
+    status.className = "status error";
+    return;
+  }
+
+  status.innerText = "Checking...";
+  status.className = "status loading";
+
+  try {
+    const { data, error } = await supabase2
+      .from("users")
+      .select("username")
+      .eq("username", username)
+      .limit(1);
+
+    if (error) throw error;
+
+    if (data.length > 0) {
+      status.innerText = "Username taken ❌";
+      status.className = "status error";
+      isUsernameValid = false;
+    } else {
+      status.innerText = "Username available ✅";
+      status.className = "status success";
+      isUsernameValid = true;
+    }
+  } catch (err) {
+    status.innerText = "Error checking username";
+    status.className = "status error";
+    isUsernameValid = false;
+  }
+}
+
+
+// SKILLS
+function addSkill() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Skill Name">
+    <select>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate" selected>Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+  `;
+
+  skillsContainer.appendChild(div);
+}
+
+// FOCUS AREAS
+function addFocusArea() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Focus Area Title">
+  `;
+
+  focusContainer.appendChild(div);
+}
+
+
+// PROJECTS
+let featured = 0;
+
+function addProject() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Project Title">
+    <textarea placeholder="Description"></textarea>
+    <input placeholder="Tech Stack">
+    <label><input type="checkbox" onchange="limitFeatured(this)"> Featured</label>
+  `;
+
+  projectsContainer.appendChild(div);
+}
+
+function limitFeatured(el) {
+  if (el.checked) {
+    featured++;
+    if (featured > 4) {
+      alert("Max 4 featured allowed");
+      el.checked = false;
+      featured--;
+    }
+  } else {
+    featured--;
+  }
+}
+
+
+// EXPERIENCE
+function addExperience() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Role / Degree">
+    <input placeholder="Company / College">
+    <input type="date" placeholder="Start Date">
+    <input type="date" placeholder="End Date">
+    <textarea placeholder="Description"></textarea>
+    <select>
+      <option value="Full-time">Full-time</option>
+      <option value="Internship">Internship</option>
+      <option value="Freelance">Freelance</option>
+    </select>
+  `;
+
+  experienceContainer.appendChild(div);
+}
+
+
+// CERT
+function addCert() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Certificate Name">
+    <input placeholder="Issuer">
+    <input type="date" placeholder="Issue Date">
+    <input placeholder="Credential URL (optional)">
+  `;
+
+  certContainer.appendChild(div);
+}
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Collect all form data
+  const username = document.getElementById("usernameInput").value.trim();
+  const name = document.querySelector('input[placeholder="Full Name"]').value.trim();
+  const role = document.querySelector('input[placeholder="Role"]').value.trim();
+  const tagline = document.querySelector('input[placeholder="Tagline"]').value.trim();
+  const about = document.querySelector('textarea[placeholder="Tell about yourself"]').value.trim();
+  const location = document.querySelector('input[placeholder="Location"]').value.trim();
+  const status = document.querySelector('select').value;
+  showGenerationLoading();
+
+  // Handle profile photo upload
+  const fileInput = document.querySelector('input[type="file"]');
+  let profilePhotoUrl = null;
+  if (fileInput.files[0]) {
+    const file = fileInput.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${username}_${Date.now()}.${fileExt}`;
+    const { data, error } = await supabase2.storage
+      .from('portfolio-photos')
+      .upload(fileName, file);
+    if (error) {
+      hideGenerationModal();
+      alert("Error uploading photo: " + error.message);
+      return;
+    }
+    profilePhotoUrl = supabase2.storage
+      .from('portfolio-photos')
+      .getPublicUrl(fileName).data.publicUrl;
+  }
+
+  // Skills and focus areas
+  const skills = Array.from(document.querySelectorAll('#skillsContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, select');
+    return {
+      name: inputs[0].value.trim(),
+      level: inputs[1].value
+    };
+  });
+  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .card')).map(card => {
+    const input = card.querySelector('input');
+    return {
+      title: input.value.trim()
+    };
+  });
+
+  // Projects
+  const projects = Array.from(document.querySelectorAll('#projectsContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, textarea');
+    return {
+      title: inputs[0].value.trim(),
+      description: inputs[1].value.trim(),
+      techStack: inputs[2].value.trim() ? inputs[2].value.trim().split(',').map(s => s.trim()) : [],
+      featured: inputs[3].checked
+    };
+  });
+
+  // Experience
+  const experience = Array.from(document.querySelectorAll('#experienceContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, textarea, select');
+    return {
+      role: inputs[0].value.trim(),
+      company: inputs[1].value.trim(),
+      start_date: inputs[2].value || null,
+      end_date: inputs[3].value || null,
+      description: inputs[4].value.trim(),
+      type: inputs[5].value
+    };
+  });
+
+  // Certifications
+  const certifications = Array.from(document.querySelectorAll('#certContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input');
+    return {
+      title: inputs[0].value.trim(),
+      issuer: inputs[1].value.trim(),
+      issue_date: inputs[2].value || null,
+      credential_url: inputs[3].value.trim() || null
+    };
+  });
+
+  // Social Links
+  const socialStep = steps[5];
+  const socialInputs = socialStep ? socialStep.querySelectorAll('input') : [];
+  const socials = {
+    github: socialInputs[0]?.value.trim() || '',
+    linkedin: socialInputs[1]?.value.trim() || '',
+    twitter: socialInputs[2]?.value.trim() || '',
+    portfolio: socialInputs[3]?.value.trim() || ''
+  };
+
+  try {
+    // 1. Insert user
+    const { data: userData, error: userError } = await supabase2
+      .from("users")
+      .insert([{ username }])
+      .select()
+      .single();
+
+    if (userError) throw userError;
+    const userId = userData.id;
+
+    // 2. Insert profile
+    const { error: profileError } = await supabase2
+      .from("profiles")
+      .insert([{
+        user_id: userId,
+        name,
+        role,
+        tagline,
+        about,
+        location,
+        status,
+        profile_photo_url: profilePhotoUrl
+      }]);
+
+    if (profileError) throw profileError;
+
+    // 3. Insert skills
+    if (skills.length > 0) {
+      const skillsData = skills.map(skill => ({
+        user_id: userId,
+        name: skill.name,
+        level: skill.level
+      }));
+      const { error: skillsError } = await supabase2
+        .from("skills")
+        .insert(skillsData);
+      if (skillsError) throw skillsError;
+    }
+
+    // 4. Insert focus areas
+    if (focusAreas.length > 0) {
+      const focusData = focusAreas.map(area => ({
+        user_id: userId,
+        title: area.title
+      }));
+      const { error: focusError } = await supabase2
+        .from("focus_areas")
+        .insert(focusData);
+      if (focusError) throw focusError;
+    }
+
+    // 5. Insert projects
+    if (projects.length > 0) {
+      const projectsData = projects.map(project => ({
+        user_id: userId,
+        title: project.title,
+        description: project.description,
+        tech_stack: project.techStack
+      }));
+      const { error: projectsError } = await supabase2
+        .from("projects")
+        .insert(projectsData);
+      if (projectsError) throw projectsError;
+    }
+
+    // 6. Insert experience
+    if (experience.length > 0) {
+      const experienceData = experience.map(exp => ({
+        user_id: userId,
+        role: exp.role,
+        company: exp.company,
+        description: exp.description,
+        type: exp.type,
+        start_date: exp.start_date,
+        end_date: exp.end_date
+      }));
+      const { error: experienceError } = await supabase2
+        .from("experience")
+        .insert(experienceData);
+      if (experienceError) throw experienceError;
+    }
+
+    // 7. Insert certifications
+    if (certifications.length > 0) {
+      const certsData = certifications.map(cert => ({
+        user_id: userId,
+        title: cert.title,
+        issuer: cert.issuer,
+        issue_date: cert.issue_date,
+        credential_url: cert.credential_url
+      }));
+      const { error: certsError } = await supabase2
+        .from("certifications")
+        .insert(certsData);
+      if (certsError) throw certsError;
+    }
+
+    // 8. Insert social links
+    const { error: socialsError } = await supabase2
+      .from("socials")
+      .insert([{
+        user_id: userId,
+        github: socials.github,
+        linkedin: socials.linkedin,
+        twitter: socials.twitter,
+        portfolio: socials.portfolio
+      }]);
+    if (socialsError) throw socialsError;
+
+    // 8. Insert default settings
+    const { error: settingsError } = await supabase2
+      .from("settings")
+      .insert([{
+        user_id: userId,
+        theme: 'dark',
+        layout: 'modern'
+      }]);
+    if (settingsError) throw settingsError;
+
+    const dynamicPortfolioUrl = buildPortfolioUrl(username);
+
+    showGenerationSuccess(dynamicPortfolioUrl);
+
+    // Reset form
+    e.target.reset();
+    document.getElementById('skillsContainer').innerHTML = '';
+    document.getElementById('focusContainer').innerHTML = '';
+    document.getElementById('projectsContainer').innerHTML = '';
+    document.getElementById('experienceContainer').innerHTML = '';
+    document.getElementById('certContainer').innerHTML = '';
+    step = 0;
+    updateStep();
+    isUsernameValid = false;
+    
+  } catch (error) {
+    hideGenerationModal();
+    console.error('Error creating portfolio:', error);
+    alert("Error creating portfolio: " + error.message);
+  }
+});
+</script>
 </body>
 </html>
