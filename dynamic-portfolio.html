@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dynamic Portfolio Viewer</title>
+  <meta name="description" content="Dynamic portfolio generated from Supabase data." />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+  <script defer src="dynamic-portfolio.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <div id="scrollProgress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="portfolio-builder.html">Krishna Gera</a>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
+      <a href="portfolio-builder.html">Portfolio Builder</a>
+      <a href="dynamic-portfolio.html" class="active">Portfolio Viewer</a>
+    </nav>
+    <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="portfolio-builder.html">Portfolio Builder</a>
+        <a href="dynamic-portfolio.html" class="active">Portfolio Viewer</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
+  </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
+
+  <main class="page" id="portfolioRoot">
+    <section class="zoom-section portfolio-state" id="portfolioStatus">
+      <h1>Portfolio Viewer</h1>
+      <p class="lead">Pass a username in the URL to render a generated portfolio.</p>
+      <p class="meta">Example: <code>dynamic-portfolio.html?username=demo_user</code></p>
+    </section>
+  </main>
+
+  <button id="toTop" aria-label="Back to top">↑</button>
+
+  <footer>
+    <p>Dynamic data-driven portfolio rendering with Supabase.</p>
+  </footer>
+</body>
+</html>

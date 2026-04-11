@@ -15,31 +15,9 @@
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="index.html">Krishna Gera</a>
-    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
-    <nav class="desktop-nav">
-      <a href="index.html">Home</a>
-      <a href="projects.html">Projects</a>
-      <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
-      <a href="contact.html">Contact</a>
-    </nav>
+    <a class="brand" href="portfolio-builder.html">Krishna Gera</a>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
-
-    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
-      <div class="sidebar-head">
-        <strong>Menu</strong>
-        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
-      </div>
-      <nav class="mobile-nav">
-        <a href="index.html">Home</a>
-        <a href="projects.html">Projects</a>
-        <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
-        <a href="contact.html">Contact</a>
-      </nav>
-      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
-    </aside>
   </header>
-  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
   <main class="page">
     <section class="zoom-section">
@@ -152,6 +130,31 @@
 
   </main>
 
+  <div id="generationModal" class="generation-modal" hidden>
+    <div class="generation-card" role="dialog" aria-modal="true" aria-live="polite">
+      <div id="loadingState">
+        <div class="spinner" aria-hidden="true"></div>
+        <h2>Generating your portfolio</h2>
+        <p id="loadingText" class="lead">Setting up your portfolio…</p>
+        <div class="progress-wrap" aria-label="Generation progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <p id="progressValue" class="meta">0%</p>
+      </div>
+
+      <div id="successState" hidden>
+        <h2>✅ Your portfolio is ready!</h2>
+        <p class="lead">Your generated portfolio link:</p>
+        <div id="generatedUrl" class="url-box"></div>
+        <div class="success-actions">
+          <button id="copyUrlBtn" type="button">📋 Copy URL</button>
+          <button id="openUrlBtn" type="button">🚀 Open Portfolio</button>
+          <button id="closeModalBtn" type="button" class="add">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <p>Build your portfolio with ease.</p>
   </footer>
@@ -164,6 +167,14 @@ body {
   font-family: 'Inter', sans-serif;
   background: var(--bg);
   color: var(--text);
+}
+
+.site-header {
+  justify-content: space-between;
+}
+
+.desktop-theme {
+  display: inline-block !important;
 }
 
 .app {
@@ -284,8 +295,73 @@ button {
 
 button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
+.generation-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 24, 0.56);
+  display: grid;
+  place-items: center;
+  z-index: 80;
+  padding: 1rem;
+}
+
+.generation-card {
+  width: min(560px, 94vw);
+  border-radius: 18px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 52px;
+  height: 52px;
+  border: 4px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 0.9rem;
+  animation: spin 0.9s linear infinite;
+}
+
+.progress-wrap {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  overflow: hidden;
+  margin-top: 0.8rem;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(95deg, var(--accent), var(--accent-2));
+  transition: width 0.28s ease;
+}
+
+.url-box {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.8rem;
+  word-break: break-all;
+  margin-bottom: 1rem;
+}
+
+.success-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 600px) {
   .card { padding: 15px; }
+  .success-actions button { width: 100%; }
 }
 </style>
 
@@ -300,6 +376,78 @@ let isUsernameValid = false;
 
 const steps = document.querySelectorAll(".step");
 const indicators = document.querySelectorAll(".step-indicator");
+const generationModal = document.getElementById("generationModal");
+const loadingState = document.getElementById("loadingState");
+const successState = document.getElementById("successState");
+const loadingText = document.getElementById("loadingText");
+const progressBar = document.getElementById("progressBar");
+const progressValue = document.getElementById("progressValue");
+const generatedUrl = document.getElementById("generatedUrl");
+const copyUrlBtn = document.getElementById("copyUrlBtn");
+const openUrlBtn = document.getElementById("openUrlBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+
+let progressInterval = null;
+let generationProgress = 0;
+const loadingMessages = [
+  "Setting up your portfolio…",
+  "Designing your layout…",
+  "Finalizing details…"
+];
+
+function updateGenerationProgress(value) {
+  progressBar.style.width = `${value}%`;
+  progressValue.textContent = `${value}%`;
+}
+
+function showGenerationLoading() {
+  generationProgress = 0;
+  generationModal.hidden = false;
+  loadingState.hidden = false;
+  successState.hidden = true;
+  updateGenerationProgress(0);
+  loadingText.textContent = loadingMessages[0];
+
+  if (progressInterval) clearInterval(progressInterval);
+  progressInterval = setInterval(() => {
+    if (generationProgress >= 92) return;
+    generationProgress += Math.max(2, Math.floor((92 - generationProgress) / 8));
+    updateGenerationProgress(generationProgress);
+
+    if (generationProgress < 35) loadingText.textContent = loadingMessages[0];
+    else if (generationProgress < 75) loadingText.textContent = loadingMessages[1];
+    else loadingText.textContent = loadingMessages[2];
+  }, 240);
+}
+
+function showGenerationSuccess(url) {
+  if (progressInterval) clearInterval(progressInterval);
+  generationProgress = 100;
+  updateGenerationProgress(100);
+
+  setTimeout(() => {
+    loadingState.hidden = true;
+    successState.hidden = false;
+    generatedUrl.textContent = url;
+    copyUrlBtn.onclick = async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        copyUrlBtn.textContent = "✅ Copied";
+        setTimeout(() => { copyUrlBtn.textContent = "📋 Copy URL"; }, 1300);
+      } catch {
+        copyUrlBtn.textContent = "Copy failed";
+      }
+    };
+    openUrlBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
+  }, 360);
+}
+
+function hideGenerationModal() {
+  if (progressInterval) clearInterval(progressInterval);
+  generationModal.hidden = true;
+}
+
+closeModalBtn.addEventListener("click", hideGenerationModal);
 
 function updateStep() {
   steps.forEach((s, i) => {
@@ -487,6 +635,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       .from('portfolio-photos')
       .upload(fileName, file);
     if (error) {
+      hideGenerationModal();
       alert("Error uploading photo: " + error.message);
       return;
     }
@@ -553,6 +702,8 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     twitter: socialInputs[2]?.value.trim() || '',
     portfolio: socialInputs[3]?.value.trim() || ''
   };
+
+  showGenerationLoading();
 
   try {
     // 1. Insert user
@@ -674,8 +825,11 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       }]);
     if (settingsError) throw settingsError;
 
-    alert("Portfolio created successfully!");
-    
+    const dynamicPortfolioPath = 'dynamic-portfolio.html';
+    const dynamicPortfolioUrl = `${window.location.origin}${window.location.pathname.replace('portfolio-builder.html', dynamicPortfolioPath)}?username=${encodeURIComponent(username)}`;
+
+    showGenerationSuccess(dynamicPortfolioUrl);
+
     // Reset form
     e.target.reset();
     document.getElementById('skillsContainer').innerHTML = '';
@@ -688,6 +842,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     isUsernameValid = false;
     
   } catch (error) {
+    hideGenerationModal();
     console.error('Error creating portfolio:', error);
     alert("Error creating portfolio: " + error.message);
   }
