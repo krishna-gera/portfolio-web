@@ -322,3 +322,31 @@ footer { width: min(1120px, 92vw); margin: 0 auto; padding: 1rem 0 2rem; border-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
+
+.portfolio-state {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+}
+
+.portfolio-state code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.state-loading h1::after {
+  content: '…';
+  animation: pulseDots 1s infinite;
+}
+
+.state-error {
+  border-color: color-mix(in srgb, #ff4f64 45%, var(--border));
+}
+
+@keyframes pulseDots {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
