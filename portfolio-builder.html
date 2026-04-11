@@ -447,6 +447,10 @@ function hideGenerationModal() {
   generationModal.hidden = true;
 }
 
+function buildPortfolioUrl(username) {
+  return `${window.location.origin}/v/${encodeURIComponent(username)}`;
+}
+
 closeModalBtn.addEventListener("click", hideGenerationModal);
 
 function updateStep() {
@@ -825,8 +829,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       }]);
     if (settingsError) throw settingsError;
 
-    const dynamicPortfolioPath = 'dynamic-portfolio.html';
-    const dynamicPortfolioUrl = `${window.location.origin}${window.location.pathname.replace('portfolio-builder.html', dynamicPortfolioPath)}?username=${encodeURIComponent(username)}`;
+    const dynamicPortfolioUrl = buildPortfolioUrl(username);
 
     showGenerationSuccess(dynamicPortfolioUrl);
 

@@ -18,7 +18,11 @@ function setStatus(type, title, message) {
 }
 
 function getUsernameFromUrl() {
-  return new URLSearchParams(window.location.search).get('username')?.trim() || '';
+  const pathParts = window.location.pathname.split('/').filter(Boolean);
+  const vIndex = pathParts.findIndex((part) => part.toLowerCase() === 'v');
+  const usernameFromPath = vIndex >= 0 ? decodeURIComponent(pathParts[vIndex + 1] || '').trim() : '';
+  const usernameFromQuery = new URLSearchParams(window.location.search).get('username')?.trim() || '';
+  return usernameFromPath || usernameFromQuery;
 }
 
 async function fetchUserIdByUsername(client, username) {
