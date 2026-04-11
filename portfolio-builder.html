@@ -546,12 +546,12 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   });
 
   // Social Links
-  const socialInputs = document.querySelectorAll('.step:nth-child(7) input');
+  const socialInputs = document.querySelectorAll('.step:nth-child(6) input');
   const socials = {
-    github: socialInputs[0].value.trim(),
-    linkedin: socialInputs[1].value.trim(),
-    twitter: socialInputs[2].value.trim(),
-    portfolio: socialInputs[3].value.trim()
+    github: socialInputs[0]?.value.trim() || '',
+    linkedin: socialInputs[1]?.value.trim() || '',
+    twitter: socialInputs[2]?.value.trim() || '',
+    portfolio: socialInputs[3]?.value.trim() || ''
   };
 
   try {
