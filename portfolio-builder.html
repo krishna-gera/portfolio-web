@@ -62,6 +62,7 @@
       <div class="step-indicator" onclick="goToStep(2)">3<span>Skills</span></div>
       <div class="step-indicator" onclick="goToStep(3)">4<span>Projects</span></div>
       <div class="step-indicator" onclick="goToStep(4)">5<span>Career</span></div>
+      <div class="step-indicator" onclick="goToStep(5)">6<span>Social</span></div>
     </div>
 
     <form id="form">
@@ -101,14 +102,12 @@
         <h2>Skills & Focus</h2>
 
         <label>Skills</label>
-        <div class="tag-input" id="skillsBox">
-          <input id="skillsInput" placeholder="Type & press Enter">
-        </div>
+        <div id="skillsContainer"></div>
+        <button type="button" class="add" onclick="addSkill()">+ Add Skill</button>
 
         <label>Focus Areas</label>
-        <div class="tag-input" id="focusBox">
-          <input id="focusInput" placeholder="Type & press Enter">
-        </div>
+        <div id="focusContainer"></div>
+        <button type="button" class="add" onclick="addFocusArea()">+ Add Focus Area</button>
       </div>
 
       <!-- STEP 4 -->
@@ -129,6 +128,15 @@
         <h3>Certifications</h3>
         <div id="certContainer"></div>
         <button type="button" class="add" onclick="addCert()">+ Add Certification</button>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="step">
+        <h2>Social Links</h2>
+        <input placeholder="GitHub URL">
+        <input placeholder="LinkedIn URL">
+        <input placeholder="Twitter URL">
+        <input placeholder="Portfolio URL">
       </div>
 
       <!-- NAV -->
@@ -334,9 +342,9 @@ async function checkUsername() {
 
   try {
     const { data, error } = await supabase2
-      .from("portfolios")
-      .select("data")
-      .eq("data->>username", username)
+      .from("users")
+      .select("username")
+      .eq("username", username)
       .limit(1);
 
     if (error) throw error;
@@ -358,30 +366,34 @@ async function checkUsername() {
 }
 
 
-// TAG INPUT
-function setupTag(inputId, boxId) {
-  const input = document.getElementById(inputId);
-  const box = document.getElementById(boxId);
+// SKILLS
+function addSkill() {
+  const div = document.createElement("div");
+  div.className = "card";
 
-  input.addEventListener("keypress", e => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const val = input.value.trim();
-      if (!val) return;
+  div.innerHTML = `
+    <input placeholder="Skill Name">
+    <select>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate" selected>Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+  `;
 
-      const chip = document.createElement("div");
-      chip.className = "tag-chip";
-      chip.innerHTML = `${val} <span>x</span>`;
-      chip.querySelector("span").onclick = () => chip.remove();
-
-      box.insertBefore(chip, input);
-      input.value = "";
-    }
-  });
+  skillsContainer.appendChild(div);
 }
 
-setupTag("skillsInput", "skillsBox");
-setupTag("focusInput", "focusBox");
+// FOCUS AREAS
+function addFocusArea() {
+  const div = document.createElement("div");
+  div.className = "card";
+
+  div.innerHTML = `
+    <input placeholder="Focus Area Title">
+  `;
+
+  focusContainer.appendChild(div);
+}
 
 
 // PROJECTS
@@ -423,8 +435,14 @@ function addExperience() {
   div.innerHTML = `
     <input placeholder="Role / Degree">
     <input placeholder="Company / College">
-    <input placeholder="Duration">
+    <input type="date" placeholder="Start Date">
+    <input type="date" placeholder="End Date">
     <textarea placeholder="Description"></textarea>
+    <select>
+      <option value="Full-time">Full-time</option>
+      <option value="Internship">Internship</option>
+      <option value="Freelance">Freelance</option>
+    </select>
   `;
 
   experienceContainer.appendChild(div);
@@ -439,7 +457,8 @@ function addCert() {
   div.innerHTML = `
     <input placeholder="Certificate Name">
     <input placeholder="Issuer">
-    <input placeholder="Year">
+    <input type="date" placeholder="Issue Date">
+    <input placeholder="Credential URL (optional)">
   `;
 
   certContainer.appendChild(div);
@@ -477,8 +496,19 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   }
 
   // Skills and focus areas
-  const skills = Array.from(document.querySelectorAll('#skillsBox .tag-chip')).map(chip => chip.textContent.replace(' x', '').trim());
-  const focusAreas = Array.from(document.querySelectorAll('#focusBox .tag-chip')).map(chip => chip.textContent.replace(' x', '').trim());
+  const skills = Array.from(document.querySelectorAll('#skillsContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, select');
+    return {
+      name: inputs[0].value.trim(),
+      level: inputs[1].value
+    };
+  });
+  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .card')).map(card => {
+    const input = card.querySelector('input');
+    return {
+      title: input.value.trim()
+    };
+  });
 
   // Projects
   const projects = Array.from(document.querySelectorAll('#projectsContainer .card')).map(card => {
@@ -486,19 +516,21 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     return {
       title: inputs[0].value.trim(),
       description: inputs[1].value.trim(),
-      techStack: inputs[2].value.trim(),
+      techStack: inputs[2].value.trim() ? inputs[2].value.trim().split(',').map(s => s.trim()) : [],
       featured: inputs[3].checked
     };
   });
 
   // Experience
   const experience = Array.from(document.querySelectorAll('#experienceContainer .card')).map(card => {
-    const inputs = card.querySelectorAll('input, textarea');
+    const inputs = card.querySelectorAll('input, textarea, select');
     return {
       role: inputs[0].value.trim(),
       company: inputs[1].value.trim(),
-      duration: inputs[2].value.trim(),
-      description: inputs[3].value.trim()
+      start_date: inputs[2].value || null,
+      end_date: inputs[3].value || null,
+      description: inputs[4].value.trim(),
+      type: inputs[5].value
     };
   });
 
@@ -506,47 +538,158 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   const certifications = Array.from(document.querySelectorAll('#certContainer .card')).map(card => {
     const inputs = card.querySelectorAll('input');
     return {
-      name: inputs[0].value.trim(),
+      title: inputs[0].value.trim(),
       issuer: inputs[1].value.trim(),
-      year: inputs[2].value.trim()
+      issue_date: inputs[2].value || null,
+      credential_url: inputs[3].value.trim() || null
     };
   });
 
-  const formData = {
-    username,
-    name,
-    role,
-    tagline,
-    about,
-    location,
-    status,
-    profilePhotoUrl,
-    skills,
-    focusAreas,
-    projects,
-    experience,
-    certifications
+  // Social Links
+  const socialInputs = document.querySelectorAll('.step:nth-child(7) input');
+  const socials = {
+    github: socialInputs[0].value.trim(),
+    linkedin: socialInputs[1].value.trim(),
+    twitter: socialInputs[2].value.trim(),
+    portfolio: socialInputs[3].value.trim()
   };
 
-  const { error } = await supabase2
-    .from("portfolios")
-    .insert([{ data: formData }]);
+  try {
+    // 1. Insert user
+    const { data: userData, error: userError } = await supabase2
+      .from("users")
+      .insert([{ username }])
+      .select()
+      .single();
 
-  if (error) {
-    alert("Error: " + error.message);
-  } else {
-    alert("Portfolio created!");
+    if (userError) throw userError;
+    const userId = userData.id;
+
+    // 2. Insert profile
+    const { error: profileError } = await supabase2
+      .from("profiles")
+      .insert([{
+        user_id: userId,
+        name,
+        role,
+        tagline,
+        about,
+        location,
+        status,
+        profile_photo_url: profilePhotoUrl
+      }]);
+
+    if (profileError) throw profileError;
+
+    // 3. Insert skills
+    if (skills.length > 0) {
+      const skillsData = skills.map(skill => ({
+        user_id: userId,
+        name: skill.name,
+        level: skill.level
+      }));
+      const { error: skillsError } = await supabase2
+        .from("skills")
+        .insert(skillsData);
+      if (skillsError) throw skillsError;
+    }
+
+    // 4. Insert focus areas
+    if (focusAreas.length > 0) {
+      const focusData = focusAreas.map(area => ({
+        user_id: userId,
+        title: area.title
+      }));
+      const { error: focusError } = await supabase2
+        .from("focus_areas")
+        .insert(focusData);
+      if (focusError) throw focusError;
+    }
+
+    // 5. Insert projects
+    if (projects.length > 0) {
+      const projectsData = projects.map(project => ({
+        user_id: userId,
+        title: project.title,
+        description: project.description,
+        tech_stack: project.techStack
+      }));
+      const { error: projectsError } = await supabase2
+        .from("projects")
+        .insert(projectsData);
+      if (projectsError) throw projectsError;
+    }
+
+    // 6. Insert experience
+    if (experience.length > 0) {
+      const experienceData = experience.map(exp => ({
+        user_id: userId,
+        role: exp.role,
+        company: exp.company,
+        description: exp.description,
+        type: exp.type,
+        start_date: exp.start_date,
+        end_date: exp.end_date
+      }));
+      const { error: experienceError } = await supabase2
+        .from("experience")
+        .insert(experienceData);
+      if (experienceError) throw experienceError;
+    }
+
+    // 7. Insert certifications
+    if (certifications.length > 0) {
+      const certsData = certifications.map(cert => ({
+        user_id: userId,
+        title: cert.title,
+        issuer: cert.issuer,
+        issue_date: cert.issue_date,
+        credential_url: cert.credential_url
+      }));
+      const { error: certsError } = await supabase2
+        .from("certifications")
+        .insert(certsData);
+      if (certsError) throw certsError;
+    }
+
+    // 8. Insert social links
+    const { error: socialsError } = await supabase2
+      .from("socials")
+      .insert([{
+        user_id: userId,
+        github: socials.github,
+        linkedin: socials.linkedin,
+        twitter: socials.twitter,
+        portfolio: socials.portfolio
+      }]);
+    if (socialsError) throw socialsError;
+
+    // 8. Insert default settings
+    const { error: settingsError } = await supabase2
+      .from("settings")
+      .insert([{
+        user_id: userId,
+        theme: 'dark',
+        layout: 'modern'
+      }]);
+    if (settingsError) throw settingsError;
+
+    alert("Portfolio created successfully!");
+    
+    // Reset form
     e.target.reset();
-    // Reset dynamic content
+    document.getElementById('skillsContainer').innerHTML = '';
+    document.getElementById('focusContainer').innerHTML = '';
     document.getElementById('projectsContainer').innerHTML = '';
     document.getElementById('experienceContainer').innerHTML = '';
     document.getElementById('certContainer').innerHTML = '';
-    document.getElementById('skillsBox').innerHTML = '<input id="skillsInput" placeholder="Type & press Enter">';
-    document.getElementById('focusBox').innerHTML = '<input id="focusInput" placeholder="Type & press Enter">';
-    setupTag("skillsInput", "skillsBox");
-    setupTag("focusInput", "focusBox");
     step = 0;
     updateStep();
+    isUsernameValid = false;
+    
+  } catch (error) {
+    console.error('Error creating portfolio:', error);
+    alert("Error creating portfolio: " + error.message);
   }
 });
 </script>
