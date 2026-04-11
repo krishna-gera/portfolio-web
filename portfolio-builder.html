@@ -327,18 +327,28 @@ async function checkUsername() {
   status.innerText = "Checking...";
   status.className = "status loading";
 
-  await new Promise(r => setTimeout(r, 800));
+  try {
+    const { data, error } = await supabase2
+      .from("portfolios")
+      .select("data")
+      .eq("data->>username", username)
+      .limit(1);
 
-  const taken = ["admin", "test", "krishna"];
+    if (error) throw error;
 
-  if (taken.includes(username.toLowerCase())) {
-    status.innerText = "Username taken ❌";
+    if (data.length > 0) {
+      status.innerText = "Username taken ❌";
+      status.className = "status error";
+      isUsernameValid = false;
+    } else {
+      status.innerText = "Username available ✅";
+      status.className = "status success";
+      isUsernameValid = true;
+    }
+  } catch (err) {
+    status.innerText = "Error checking username";
     status.className = "status error";
     isUsernameValid = false;
-  } else {
-    status.innerText = "Username available ✅";
-    status.className = "status success";
-    isUsernameValid = true;
   }
 }
 
@@ -433,23 +443,105 @@ function addCert() {
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // Collect basic data for demo
-  const username = document.getElementById("usernameInput").value;
-  const name = document.querySelector('input[placeholder="Full Name"]').value;
-  const role = document.querySelector('input[placeholder="Role"]').value;
-  const tagline = document.querySelector('input[placeholder="Tagline"]').value;
+  // Collect all form data
+  const username = document.getElementById("usernameInput").value.trim();
+  const name = document.querySelector('input[placeholder="Full Name"]').value.trim();
+  const role = document.querySelector('input[placeholder="Role"]').value.trim();
+  const tagline = document.querySelector('input[placeholder="Tagline"]').value.trim();
+  const about = document.querySelector('textarea[placeholder="Tell about yourself"]').value.trim();
+  const location = document.querySelector('input[placeholder="Location"]').value.trim();
+  const status = document.querySelector('select').value;
 
-  const data = { username, name, role, tagline };
+  // Handle profile photo upload
+  const fileInput = document.querySelector('input[type="file"]');
+  let profilePhotoUrl = null;
+  if (fileInput.files[0]) {
+    const file = fileInput.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${username}_${Date.now()}.${fileExt}`;
+    const { data, error } = await supabase2.storage
+      .from('portfolio-photos')
+      .upload(fileName, file);
+    if (error) {
+      alert("Error uploading photo: " + error.message);
+      return;
+    }
+    profilePhotoUrl = supabase2.storage
+      .from('portfolio-photos')
+      .getPublicUrl(fileName).data.publicUrl;
+  }
+
+  // Skills and focus areas
+  const skills = Array.from(document.querySelectorAll('#skillsBox .tag-chip')).map(chip => chip.textContent.replace(' x', '').trim());
+  const focusAreas = Array.from(document.querySelectorAll('#focusBox .tag-chip')).map(chip => chip.textContent.replace(' x', '').trim());
+
+  // Projects
+  const projects = Array.from(document.querySelectorAll('#projectsContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, textarea');
+    return {
+      title: inputs[0].value.trim(),
+      description: inputs[1].value.trim(),
+      techStack: inputs[2].value.trim(),
+      featured: inputs[3].checked
+    };
+  });
+
+  // Experience
+  const experience = Array.from(document.querySelectorAll('#experienceContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, textarea');
+    return {
+      role: inputs[0].value.trim(),
+      company: inputs[1].value.trim(),
+      duration: inputs[2].value.trim(),
+      description: inputs[3].value.trim()
+    };
+  });
+
+  // Certifications
+  const certifications = Array.from(document.querySelectorAll('#certContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input');
+    return {
+      name: inputs[0].value.trim(),
+      issuer: inputs[1].value.trim(),
+      year: inputs[2].value.trim()
+    };
+  });
+
+  const formData = {
+    username,
+    name,
+    role,
+    tagline,
+    about,
+    location,
+    status,
+    profilePhotoUrl,
+    skills,
+    focusAreas,
+    projects,
+    experience,
+    certifications
+  };
 
   const { error } = await supabase2
     .from("portfolios")
-    .insert([data]);
+    .insert([{ data: formData }]);
 
   if (error) {
     alert("Error: " + error.message);
   } else {
     alert("Portfolio created!");
     e.target.reset();
+    // Reset dynamic content
+    document.getElementById('projectsContainer').innerHTML = '';
+    document.getElementById('experienceContainer').innerHTML = '';
+    document.getElementById('certContainer').innerHTML = '';
+    document.getElementById('skillsBox').innerHTML = '<input id="skillsInput" placeholder="Type & press Enter">';
+    document.getElementById('focusBox').innerHTML = '<input id="focusInput" placeholder="Type & press Enter">';
+    setupTag("skillsInput", "skillsBox");
+    setupTag("focusInput", "focusBox");
+    step = 0;
+    updateStep();
   }
 });
 </script>
