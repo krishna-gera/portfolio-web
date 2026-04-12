@@ -8,6 +8,7 @@
   <meta name="description"
     content="Build your professional portfolio with Krishna Gera's Portfolio Builder tool." />
   <link rel="stylesheet" href="style.css" />
+  <script src="env.js"></script>
   <script defer src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -80,12 +81,12 @@
         <h2>Skills & Focus</h2>
 
         <label>Skills</label>
-        <div id="skillsContainer"></div>
-        <button type="button" class="add" onclick="addSkill()">+ Add Skill</button>
+        <input id="skillInput" data-tag-target="skillsContainer" placeholder="Type a skill and press Enter">
+        <div id="skillsContainer" class="tag-input"></div>
 
         <label>Focus Areas</label>
-        <div id="focusContainer"></div>
-        <button type="button" class="add" onclick="addFocusArea()">+ Add Focus Area</button>
+        <input id="focusInput" data-tag-target="focusContainer" placeholder="Type a focus area and press Enter">
+        <div id="focusContainer" class="tag-input"></div>
       </div>
 
       <!-- STEP 4 -->
@@ -305,6 +306,10 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
   padding: 1rem;
 }
 
+.generation-modal[hidden] {
+  display: none !important;
+}
+
 .generation-card {
   width: min(560px, 94vw);
   border-radius: 18px;
@@ -367,8 +372,13 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
 <script>
 const { createClient } = supabase;
-const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
+const env = window.__APP_ENV__ || {};
+const supabaseUrl = env.SUPABASE_URL || env.VITE_API_URL || "";
+const supabaseKey = env.SUPABASE_ANON_KEY || env.VITE_API_KEY || "";
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Missing Supabase environment variables. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js/.env.");
+}
 const supabase2 = createClient(supabaseUrl, supabaseKey);
 
 let step = 0;
@@ -448,7 +458,7 @@ function hideGenerationModal() {
 }
 
 function buildPortfolioUrl(username) {
-  return `${window.location.origin}/v/${encodeURIComponent(username)}`;
+  return `${window.location.origin}/dynamic-portfolio.html?username=${encodeURIComponent(username)}`;
 }
 
 closeModalBtn.addEventListener("click", hideGenerationModal);
@@ -518,34 +528,39 @@ async function checkUsername() {
 }
 
 
-// SKILLS
-function addSkill() {
-  const div = document.createElement("div");
-  div.className = "card";
+function addTag(containerId, rawValue) {
+  const container = document.getElementById(containerId);
+  const value = rawValue.trim();
+  if (!container || !value) return;
 
-  div.innerHTML = `
-    <input placeholder="Skill Name">
-    <select>
-      <option value="Beginner">Beginner</option>
-      <option value="Intermediate" selected>Intermediate</option>
-      <option value="Advanced">Advanced</option>
-    </select>
-  `;
+  const alreadyExists = Array.from(container.querySelectorAll('.tag-chip')).some((chip) => {
+    return chip.dataset.value?.toLowerCase() === value.toLowerCase();
+  });
+  if (alreadyExists) return;
 
-  skillsContainer.appendChild(div);
+  const chip = document.createElement("span");
+  chip.className = "tag-chip";
+  chip.dataset.value = value;
+  chip.innerHTML = `${value} <span aria-label="Remove tag" role="button">&times;</span>`;
+
+  chip.querySelector('span').addEventListener('click', () => chip.remove());
+  container.appendChild(chip);
 }
 
-// FOCUS AREAS
-function addFocusArea() {
-  const div = document.createElement("div");
-  div.className = "card";
-
-  div.innerHTML = `
-    <input placeholder="Focus Area Title">
-  `;
-
-  focusContainer.appendChild(div);
+function handleTagInputSubmit(input) {
+  if (!input) return;
+  addTag(input.dataset.tagTarget, input.value);
+  input.value = '';
 }
+
+document.getElementById("form").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
+
+  e.preventDefault();
+  if (e.target.dataset.tagTarget) {
+    handleTagInputSubmit(e.target);
+  }
+});
 
 
 // PROJECTS
@@ -618,9 +633,22 @@ function addCert() {
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  showGenerationLoading();
 
   // Collect all form data
   const username = document.getElementById("usernameInput").value.trim();
+  if (!username) {
+    hideGenerationModal();
+    alert("Please enter a username before generating your portfolio.");
+    return;
+  }
+
+  if (!isUsernameValid) {
+    hideGenerationModal();
+    alert("Please check and confirm your username before generating your portfolio.");
+    return;
+  }
+
   const name = document.querySelector('input[placeholder="Full Name"]').value.trim();
   const role = document.querySelector('input[placeholder="Role"]').value.trim();
   const tagline = document.querySelector('input[placeholder="Tagline"]').value.trim();
@@ -649,17 +677,15 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   }
 
   // Skills and focus areas
-  const skills = Array.from(document.querySelectorAll('#skillsContainer .card')).map(card => {
-    const inputs = card.querySelectorAll('input, select');
+  const skills = Array.from(document.querySelectorAll('#skillsContainer .tag-chip')).map((chip) => {
     return {
-      name: inputs[0].value.trim(),
-      level: inputs[1].value
+      name: chip.dataset.value || chip.textContent.trim(),
+      level: "Intermediate"
     };
   });
-  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .card')).map(card => {
-    const input = card.querySelector('input');
+  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .tag-chip')).map((chip) => {
     return {
-      title: input.value.trim()
+      title: chip.dataset.value || chip.textContent.trim()
     };
   });
 
@@ -706,8 +732,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     twitter: socialInputs[2]?.value.trim() || '',
     portfolio: socialInputs[3]?.value.trim() || ''
   };
-
-  showGenerationLoading();
 
   try {
     // 1. Insert user
