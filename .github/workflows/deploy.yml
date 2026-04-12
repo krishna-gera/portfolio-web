@@ -1,0 +1,76 @@
+name: Deploy Portfolio
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Supabase secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URI: ${{ secrets.SUPABASE_URI }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          URL_VALUE="${SUPABASE_URL:-${SUPABASE_URI:-}}"
+          if [ -z "$URL_VALUE" ]; then
+            echo "Missing secret: SUPABASE_URL (or SUPABASE_URI fallback)." >&2
+            exit 1
+          fi
+          if [ -z "${SUPABASE_ANON_KEY:-}" ]; then
+            echo "Missing secret: SUPABASE_ANON_KEY." >&2
+            exit 1
+          fi
+          case "$URL_VALUE" in
+            https://*.supabase.co) ;;
+            *)
+              echo "SUPABASE_URL must match https://<project-ref>.supabase.co" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Build runtime env.js from secrets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_URI: ${{ secrets.SUPABASE_URI }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          set -euo pipefail
+          URL_VALUE="${SUPABASE_URL:-${SUPABASE_URI:-}}"
+          cat > env.js <<EOF
+          window.__APP_ENV__ = {
+            SUPABASE_URL: '${URL_VALUE}',
+            SUPABASE_ANON_KEY: '${SUPABASE_ANON_KEY}'
+          };
+          EOF
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
