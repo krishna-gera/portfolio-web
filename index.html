@@ -16,7 +16,7 @@
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="portfolio-builder.html">Portfolio Builder</a>
+    <a class="brand" href="index.html">Krishna Gera</a>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
   </header>
 
@@ -439,9 +439,22 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
 <script>
 const { createClient } = supabase;
-const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
-const supabase2 = createClient(supabaseUrl, supabaseKey);
+const env = window.__APP_ENV__ || {};
+const supabaseUrl = env.SUPABASE_URL || "";
+const supabaseKey = env.SUPABASE_ANON_KEY || "";
+let supabase2 = null;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error("Missing Supabase environment variables. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js/.env.");
+} else {
+  supabase2 = createClient(supabaseUrl, supabaseKey);
+}
+
+function requireSupabaseClient() {
+  if (supabase2) return true;
+  alert("Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
+  return false;
+}
 
 let step = 0;
 var isUsernameValid = false;
@@ -552,6 +565,7 @@ updateStep();
 
 // USERNAME CHECK
 async function checkUsername() {
+  if (!requireSupabaseClient()) return;
   const username = usernameInput.value.trim();
   const status = usernameStatus;
 
@@ -695,6 +709,7 @@ function addCert() {
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (!requireSupabaseClient()) return;
   showGenerationLoading();
 
   // Collect all form data

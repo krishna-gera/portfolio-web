@@ -1,7 +1,6 @@
-// const APP_ENV = window.__APP_ENV__ || {};
-
-const SUPABASE_URL = "https://wbqkpaypxuewyuksrgvr.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
+const APP_ENV = window.__APP_ENV__ || {};
+const SUPABASE_URL = APP_ENV.SUPABASE_URL || '';
+const SUPABASE_KEY = APP_ENV.SUPABASE_ANON_KEY || '';
 
 const portfolioRoot = document.getElementById('portfolioRoot');
 const portfolioStatus = document.getElementById('portfolioStatus');

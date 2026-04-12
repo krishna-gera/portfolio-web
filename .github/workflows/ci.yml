@@ -18,18 +18,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            **/package-lock.json
 
       - name: Create .env from GitHub Secrets
         run: |
           cat > .env <<'ENVEOF'
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-          VITE_API_URL=${{ secrets.SUPABASE_URL }}
-          VITE_API_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           ENVEOF
 
       - name: Create env.js runtime config
@@ -37,9 +31,7 @@ jobs:
           cat > env.js <<'ENVJSEOF'
           window.__APP_ENV__ = {
             SUPABASE_URL: '${{ secrets.SUPABASE_URL }}',
-            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}',
-            VITE_API_URL: '${{ secrets.SUPABASE_URL }}',
-            VITE_API_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
+            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
           };
           ENVJSEOF
 
