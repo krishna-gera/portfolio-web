@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Builder | Krishna Gera</title>
+  <title>Portfolio Builder</title>
   <meta name="description"
-    content="Build your professional portfolio with Krishna Gera's Portfolio Builder tool." />
+    content="Build your professional portfolio with this Portfolio Builder tool." />
   <link rel="stylesheet" href="style.css" />
   <script defer src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -15,13 +15,12 @@
 <body>
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="portfolio-builder.html">Krishna Gera</a>
+    <a class="brand" href="portfolio-builder.html">Portfolio Builder</a>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
   </header>
 
   <main class="page">
     <section class="zoom-section">
-      <h1>Portfolio Builder</h1>
       <p class="lead">Create your professional portfolio in minutes.</p>
     </section>
 
@@ -51,7 +50,7 @@
 
         <div class="username-group">
           <input id="usernameInput" placeholder="Choose Username">
-          <button type="button" onclick="checkUsername()">Check</button>
+          <button type="button" class="check-btn" onclick="checkUsername()">Check</button>
         </div>
         <p id="usernameStatus" class="status"></p>
 
@@ -170,11 +169,44 @@ body {
 }
 
 .site-header {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.brand {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .desktop-theme {
   display: inline-block !important;
+}
+
+body {
+  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 22%),
+              radial-gradient(circle at bottom right, rgba(79, 70, 229, 0.14), transparent 18%),
+              var(--bg);
+}
+
+.zoom-section {
+  text-align: center;
+  margin-bottom: 18px;
+  padding: 1.4rem 0 0.8rem;
 }
 
 .app {
@@ -187,13 +219,21 @@ body {
 .card {
   width: 100%;
   max-width: 520px;
-  background: var(--surface-strong);
-  padding: 25px;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 28px;
+  border-radius: 24px;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  backdrop-filter: blur(18px);
 }
 
 .header { text-align: center; margin-bottom: 20px; }
+
+.zoom-section .lead {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
 
 .stepper {
   display: flex;
@@ -203,12 +243,22 @@ body {
 
 .step-indicator {
   cursor: pointer;
-  padding: 6px;
+  padding: 8px 6px;
   background: var(--bg-2);
-  border-radius: 8px;
+  border-radius: 16px;
   text-align: center;
   font-size: 12px;
   color: var(--text);
+  flex: 1 1 0;
+  min-width: 60px;
+  max-width: 75px;
+  transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
+}
+
+.step-indicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
 }
 
 .step-indicator span {
@@ -294,6 +344,15 @@ button {
 }
 
 button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
+
+.check-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  width: auto;
+  min-width: 0;
+  white-space: nowrap;
+  text-align: center;
+}
 
 .generation-modal {
   position: fixed;
