@@ -1,6 +1,24 @@
 const APP_ENV = window.__APP_ENV__ || {};
-const SUPABASE_URL = APP_ENV.SUPABASE_URL || '';
-const SUPABASE_KEY = APP_ENV.SUPABASE_ANON_KEY || '';
+
+// ✅ Try multiple sources (robust fallback)
+const SUPABASE_URL =
+  APP_ENV.SUPABASE_URL ||
+  window.SUPABASE_URL ||
+  '';
+
+const SUPABASE_KEY =
+  APP_ENV.SUPABASE_ANON_KEY ||
+  window.SUPABASE_ANON_KEY ||
+  '';
+
+// ✅ Debug (remove later in production)
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("❌ Missing Supabase ENV:", {
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    APP_ENV
+  });
+}
 
 const portfolioRoot = document.getElementById('portfolioRoot');
 const portfolioStatus = document.getElementById('portfolioStatus');
