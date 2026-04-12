@@ -441,7 +441,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase2 = createClient(supabaseUrl, supabaseKey);
 
 let step = 0;
-let isUsernameValid = false;
+var isUsernameValid = false;
 
 const steps = document.querySelectorAll(".step");
 const indicators = document.querySelectorAll(".step-indicator");
