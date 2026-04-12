@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portfolio Builder</title>
+  <title>Portfolio Builder | Krishna Gera</title>
   <meta name="description"
-    content="Build your professional portfolio with this Portfolio Builder tool." />
+    content="Build your professional portfolio with Krishna Gera's Portfolio Builder tool." />
   <link rel="stylesheet" href="style.css" />
-  <script src="env.js"></script>
   <script defer src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
@@ -17,10 +16,36 @@
   <div id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="index.html">Krishna Gera</a>
+    <button id="menuToggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+    <nav class="desktop-nav">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+      <a href="contact.html">Contact</a>
+    </nav>
     <button class="theme-toggle desktop-theme" aria-label="Toggle theme">🌙</button>
+
+    <aside class="mobile-sidebar" id="mobileSidebar" aria-hidden="true">
+      <div class="sidebar-head">
+        <strong>Menu</strong>
+        <button id="sidebarClose" class="sidebar-close" aria-label="Close menu">✕</button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="index.html">Home</a>
+        <a href="projects.html">Projects</a>
+        <a href="portfolio-builder.html" class="active">Portfolio Builder</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <button class="theme-toggle sidebar-theme" aria-label="Toggle theme">🌙 Toggle theme</button>
+    </aside>
   </header>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
 
   <main class="page">
+    <section class="zoom-section">
+      <h1>Portfolio Builder</h1>
+      <p class="lead">Create your professional portfolio in minutes.</p>
+    </section>
 
 <div class="app">
   <div class="card">
@@ -76,13 +101,17 @@
       <div class="step">
         <h2>Skills & Focus</h2>
 
-        <label>Skills</label>
-        <input id="skillInput" data-tag-target="skillsContainer" placeholder="Type a skill and press Enter">
-        <div id="skillsContainer" class="tag-input"></div>
+        <div class="section">
+          <h3>Skills</h3>
+          <div id="skillsContainer"></div>
+          <button type="button" class="add" onclick="addSkill()">+ Add Skill</button>
+        </div>
 
-        <label>Focus Areas</label>
-        <input id="focusInput" data-tag-target="focusContainer" placeholder="Type a focus area and press Enter">
-        <div id="focusContainer" class="tag-input"></div>
+        <div class="section">
+          <h3>Focus Areas</h3>
+          <div id="focusContainer"></div>
+          <button type="button" class="add" onclick="addFocusArea()">+ Add Focus Area</button>
+        </div>
       </div>
 
       <!-- STEP 4 -->
@@ -127,31 +156,6 @@
 
   </main>
 
-  <div id="generationModal" class="generation-modal" hidden>
-    <div class="generation-card" role="dialog" aria-modal="true" aria-live="polite">
-      <div id="loadingState">
-        <div class="spinner" aria-hidden="true"></div>
-        <h2>Generating your portfolio</h2>
-        <p id="loadingText" class="lead">Setting up your portfolio…</p>
-        <div class="progress-wrap" aria-label="Generation progress">
-          <div id="progressBar" class="progress-bar"></div>
-        </div>
-        <p id="progressValue" class="meta">0%</p>
-      </div>
-
-      <div id="successState" hidden>
-        <h2>✅ Your portfolio is ready!</h2>
-        <p class="lead">Your generated portfolio link:</p>
-        <div id="generatedUrl" class="url-box"></div>
-        <div class="success-actions">
-          <button id="copyUrlBtn" type="button">📋 Copy URL</button>
-          <button id="openUrlBtn" type="button">🚀 Open Portfolio</button>
-          <button id="closeModalBtn" type="button" class="add">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <footer>
     <p>Build your portfolio with ease.</p>
   </footer>
@@ -166,51 +170,6 @@ body {
   color: var(--text);
 }
 
-.site-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-}
-
-.brand {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.desktop-theme {
-  display: inline-block !important;
-}
-
-body {
-  background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 22%),
-              radial-gradient(circle at bottom right, rgba(79, 70, 229, 0.14), transparent 18%),
-              var(--bg);
-}
-
-html[data-theme="dark"] body {
-  background: #000000;
-}
-
-.zoom-section {
-  text-align: left;
-  margin-bottom: 18px;
-  padding: 1.4rem 0 0.8rem;
-}
-
 .app {
   display: flex;
   justify-content: center;
@@ -221,28 +180,13 @@ html[data-theme="dark"] body {
 .card {
   width: 100%;
   max-width: 520px;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 28px;
-  border-radius: 24px;
-  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  backdrop-filter: blur(18px);
-  margin-top: 2rem;
+  background: var(--surface-strong);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
 }
 
-html[data-theme="dark"] .card {
-  background: rgba(15, 23, 42, 0.95);
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.header { text-align: center; margin-bottom: 20px;}
-
-.zoom-section .lead {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin: 0;
-}
+.header { text-align: center; margin-bottom: 20px; }
 
 .stepper {
   display: flex;
@@ -252,22 +196,12 @@ html[data-theme="dark"] .card {
 
 .step-indicator {
   cursor: pointer;
-  padding: 8px 6px;
+  padding: 6px;
   background: var(--bg-2);
-  border-radius: 16px;
+  border-radius: 8px;
   text-align: center;
   font-size: 12px;
   color: var(--text);
-  flex: 1 1 0;
-  min-width: 60px;
-  max-width: 75px;
-  transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.05);
-}
-
-.step-indicator:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.1);
 }
 
 .step-indicator span {
@@ -344,7 +278,7 @@ textarea { height: 90px; }
 }
 
 button {
-  padding: 12px 24px;
+  padding: 10px;
   border-radius: 8px;
   border: none;
   background: var(--accent);
@@ -355,188 +289,71 @@ button {
 button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
 .check-btn {
-  padding: 4px 10px;
+  padding: 4px 8px;
   font-size: 12px;
-  width: auto;
-  min-width: 0;
-  white-space: nowrap;
-  text-align: center;
 }
-
-.generation-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 15, 24, 0.56);
-  display: grid;
-  place-items: center;
-  z-index: 80;
-  padding: 1rem;
-}
-
-.generation-modal[hidden] {
-  display: none !important;
-}
-
-.generation-card {
-  width: min(560px, 94vw);
-  border-radius: 18px;
-  background: var(--surface-strong);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  padding: 1.25rem;
-  text-align: center;
-}
-
-.spinner {
-  width: 52px;
-  height: 52px;
-  border: 4px solid color-mix(in srgb, var(--accent) 20%, transparent);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  margin: 0 auto 0.9rem;
-  animation: spin 0.9s linear infinite;
-}
-
-.progress-wrap {
-  width: 100%;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--bg-2);
-  overflow: hidden;
-  margin-top: 0.8rem;
-}
-
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(95deg, var(--accent), var(--accent-2));
-  transition: width 0.28s ease;
-}
-
-.url-box {
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: 10px;
-  padding: 0.8rem;
-  word-break: break-all;
-  margin-bottom: 1rem;
-}
-
-.success-actions {
-  display: flex;
-  gap: 0.6rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 600px) {
   .card { padding: 15px; }
-  .success-actions button { width: 100%; }
+}
+
+.skill-entry, .focus-entry {
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.skill-entry input {
+  flex: 1;
+}
+
+.skill-entry select {
+  width: auto;
+  min-width: 120px;
+}
+
+.focus-entry input {
+  width: 100%;
+}
+
+#skillsContainer, #focusContainer {
+  margin-bottom: 15px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section h3 {
+  margin: 0 0 10px 0;
+  color: var(--text);
+  font-size: 16px;
 }
 </style>
 
 <script>
 const { createClient } = supabase;
-const env = window.__APP_ENV__ || {};
-const supabaseUrl = env.SUPABASE_URL || "";
-const supabaseKey = env.SUPABASE_ANON_KEY || "";
-let supabase2 = null;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase environment variables. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js/.env.");
-} else {
-  supabase2 = createClient(supabaseUrl, supabaseKey);
-}
-
-function requireSupabaseClient() {
-  if (supabase2) return true;
-  alert("Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-  return false;
-}
+const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
+const supabase2 = createClient(supabaseUrl, supabaseKey);
 
 let step = 0;
-var isUsernameValid = false;
+let isUsernameValid = false;
 
 const steps = document.querySelectorAll(".step");
 const indicators = document.querySelectorAll(".step-indicator");
-const generationModal = document.getElementById("generationModal");
-const loadingState = document.getElementById("loadingState");
-const successState = document.getElementById("successState");
-const loadingText = document.getElementById("loadingText");
-const progressBar = document.getElementById("progressBar");
-const progressValue = document.getElementById("progressValue");
-const generatedUrl = document.getElementById("generatedUrl");
-const copyUrlBtn = document.getElementById("copyUrlBtn");
-const openUrlBtn = document.getElementById("openUrlBtn");
-const closeModalBtn = document.getElementById("closeModalBtn");
-
-let progressInterval = null;
-let generationProgress = 0;
-const loadingMessages = [
-  "Setting up your portfolio…",
-  "Designing your layout…",
-  "Finalizing details…"
-];
-
-function updateGenerationProgress(value) {
-  progressBar.style.width = `${value}%`;
-  progressValue.textContent = `${value}%`;
-}
-
-function showGenerationLoading() {
-  generationProgress = 0;
-  generationModal.hidden = false;
-  loadingState.hidden = false;
-  successState.hidden = true;
-  updateGenerationProgress(0);
-  loadingText.textContent = loadingMessages[0];
-
-  if (progressInterval) clearInterval(progressInterval);
-  progressInterval = setInterval(() => {
-    if (generationProgress >= 92) return;
-    generationProgress += Math.max(2, Math.floor((92 - generationProgress) / 8));
-    updateGenerationProgress(generationProgress);
-
-    if (generationProgress < 35) loadingText.textContent = loadingMessages[0];
-    else if (generationProgress < 75) loadingText.textContent = loadingMessages[1];
-    else loadingText.textContent = loadingMessages[2];
-  }, 240);
-}
-
-function showGenerationSuccess(url) {
-  if (progressInterval) clearInterval(progressInterval);
-  generationProgress = 100;
-  updateGenerationProgress(100);
-
-  setTimeout(() => {
-    loadingState.hidden = true;
-    successState.hidden = false;
-    generatedUrl.textContent = url;
-    copyUrlBtn.onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(url);
-        copyUrlBtn.textContent = "✅ Copied";
-        setTimeout(() => { copyUrlBtn.textContent = "📋 Copy URL"; }, 1300);
-      } catch {
-        copyUrlBtn.textContent = "Copy failed";
-      }
-    };
-    openUrlBtn.onclick = () => window.open(url, "_blank", "noopener,noreferrer");
-  }, 360);
-}
-
-function hideGenerationModal() {
-  if (progressInterval) clearInterval(progressInterval);
-  generationModal.hidden = true;
-}
-
-function buildPortfolioUrl(username) {
-  return `${window.location.origin}/dynamic-portfolio.html?username=${encodeURIComponent(username)}`;
-}
-
-closeModalBtn.addEventListener("click", hideGenerationModal);
 
 function updateStep() {
   steps.forEach((s, i) => {
@@ -565,7 +382,6 @@ updateStep();
 
 // USERNAME CHECK
 async function checkUsername() {
-  if (!requireSupabaseClient()) return;
   const username = usernameInput.value.trim();
   const status = usernameStatus;
 
@@ -604,39 +420,34 @@ async function checkUsername() {
 }
 
 
-function addTag(containerId, rawValue) {
-  const container = document.getElementById(containerId);
-  const value = rawValue.trim();
-  if (!container || !value) return;
+// SKILLS
+function addSkill() {
+  const div = document.createElement("div");
+  div.className = "skill-entry";
 
-  const alreadyExists = Array.from(container.querySelectorAll('.tag-chip')).some((chip) => {
-    return chip.dataset.value?.toLowerCase() === value.toLowerCase();
-  });
-  if (alreadyExists) return;
+  div.innerHTML = `
+    <input placeholder="Skill Name">
+    <select>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate" selected>Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+  `;
 
-  const chip = document.createElement("span");
-  chip.className = "tag-chip";
-  chip.dataset.value = value;
-  chip.innerHTML = `${value} <span aria-label="Remove tag" role="button">&times;</span>`;
-
-  chip.querySelector('span').addEventListener('click', () => chip.remove());
-  container.appendChild(chip);
+  skillsContainer.appendChild(div);
 }
 
-function handleTagInputSubmit(input) {
-  if (!input) return;
-  addTag(input.dataset.tagTarget, input.value);
-  input.value = '';
+// FOCUS AREAS
+function addFocusArea() {
+  const div = document.createElement("div");
+  div.className = "focus-entry";
+
+  div.innerHTML = `
+    <input placeholder="Focus Area Title">
+  `;
+
+  focusContainer.appendChild(div);
 }
-
-document.getElementById("form").addEventListener("keydown", (e) => {
-  if (e.key !== "Enter" || e.target.tagName === "TEXTAREA") return;
-
-  e.preventDefault();
-  if (e.target.dataset.tagTarget) {
-    handleTagInputSubmit(e.target);
-  }
-});
 
 
 // PROJECTS
@@ -709,23 +520,9 @@ function addCert() {
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!requireSupabaseClient()) return;
-  showGenerationLoading();
 
   // Collect all form data
   const username = document.getElementById("usernameInput").value.trim();
-  if (!username) {
-    hideGenerationModal();
-    alert("Please enter a username before generating your portfolio.");
-    return;
-  }
-
-  if (!isUsernameValid) {
-    hideGenerationModal();
-    alert("Please check and confirm your username before generating your portfolio.");
-    return;
-  }
-
   const name = document.querySelector('input[placeholder="Full Name"]').value.trim();
   const role = document.querySelector('input[placeholder="Role"]').value.trim();
   const tagline = document.querySelector('input[placeholder="Tagline"]').value.trim();
@@ -744,7 +541,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       .from('portfolio-photos')
       .upload(fileName, file);
     if (error) {
-      hideGenerationModal();
       alert("Error uploading photo: " + error.message);
       return;
     }
@@ -754,15 +550,17 @@ document.getElementById("form").addEventListener("submit", async (e) => {
   }
 
   // Skills and focus areas
-  const skills = Array.from(document.querySelectorAll('#skillsContainer .tag-chip')).map((chip) => {
+  const skills = Array.from(document.querySelectorAll('#skillsContainer .card')).map(card => {
+    const inputs = card.querySelectorAll('input, select');
     return {
-      name: chip.dataset.value || chip.textContent.trim(),
-      level: "Intermediate"
+      name: inputs[0].value.trim(),
+      level: inputs[1].value
     };
   });
-  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .tag-chip')).map((chip) => {
+  const focusAreas = Array.from(document.querySelectorAll('#focusContainer .card')).map(card => {
+    const input = card.querySelector('input');
     return {
-      title: chip.dataset.value || chip.textContent.trim()
+      title: input.value.trim()
     };
   });
 
@@ -930,10 +728,8 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       }]);
     if (settingsError) throw settingsError;
 
-    const dynamicPortfolioUrl = buildPortfolioUrl(username);
-
-    showGenerationSuccess(dynamicPortfolioUrl);
-
+    alert("Portfolio created successfully!");
+    
     // Reset form
     e.target.reset();
     document.getElementById('skillsContainer').innerHTML = '';
@@ -946,7 +742,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     isUsernameValid = false;
     
   } catch (error) {
-    hideGenerationModal();
     console.error('Error creating portfolio:', error);
     alert("Error creating portfolio: " + error.message);
   }
