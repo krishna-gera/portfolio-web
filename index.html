@@ -447,7 +447,7 @@ async function resolveRuntimeEnv() {
   let supabaseUrl = env.SUPABASE_URL || env.SUPABASE_URI || "";
   let supabaseKey = env.SUPABASE_ANON_KEY || "";
 
-  if ((!supabaseUrl || !supabaseKey) && window.location.hostname.endsWith("vercel.app")) {
+  if (!supabaseUrl || !supabaseKey) {
     try {
       const response = await fetch("/api/env", { cache: "no-store" });
       if (response.ok) {
