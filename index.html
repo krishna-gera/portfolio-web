@@ -442,22 +442,77 @@ const { createClient } = supabase;
 let supabase2 = null;
 let supabaseInitPromise = null;
 
+// ✅ helper (timeout for fetch)
+async function fetchWithTimeout(url, options = {}, timeout = 5000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function resolveRuntimeEnv() {
   const env = window.__APP_ENV__ || {};
-  let supabaseUrl = env.SUPABASE_URL || env.SUPABASE_URI || "";
-  let supabaseKey = env.SUPABASE_ANON_KEY || "";
 
+  let supabaseUrl =
+    env.SUPABASE_URL ||
+    env.SUPABASE_URI ||
+    window.SUPABASE_URL ||   // ✅ fallback
+    "";
+
+  let supabaseKey =
+    env.SUPABASE_ANON_KEY ||
+    window.SUPABASE_ANON_KEY || // ✅ fallback
+    "";
+
+  // ✅ Try backend fallback if still missing
   if (!supabaseUrl || !supabaseKey) {
     try {
-      const response = await fetch("/api/env", { cache: "no-store" });
+      const response = await fetchWithTimeout("/api/env", {
+        cache: "no-store"
+      });
+
       if (response.ok) {
         const payload = await response.json();
-        supabaseUrl = supabaseUrl || payload.SUPABASE_URL || payload.SUPABASE_URI || "";
-        supabaseKey = supabaseKey || payload.SUPABASE_ANON_KEY || "";
+
+        supabaseUrl =
+          supabaseUrl ||
+          payload.SUPABASE_URL ||
+          payload.SUPABASE_URI ||
+          "";
+
+        supabaseKey =
+          supabaseKey ||
+          payload.SUPABASE_ANON_KEY ||
+          "";
+      } else {
+        console.warn("⚠️ /api/env failed:", response.status);
       }
     } catch (error) {
-      console.warn("Could not fetch /api/env fallback.", error);
+      if (error.name === "AbortError") {
+        console.warn("⏱️ /api/env timeout");
+      } else {
+        console.warn("⚠️ Could not fetch /api/env:", error);
+      }
     }
+  }
+
+  // ✅ FINAL VALIDATION (VERY IMPORTANT)
+  if (!supabaseUrl || !supabaseKey) {
+    console.error("❌ Supabase ENV missing:", {
+      supabaseUrl,
+      supabaseKey,
+      env,
+      windowEnv: {
+        SUPABASE_URL: window.SUPABASE_URL,
+        SUPABASE_ANON_KEY: window.SUPABASE_ANON_KEY
+      }
+    });
+
+    throw new Error("Supabase environment variables are missing.");
   }
 
   return { supabaseUrl, supabaseKey };
