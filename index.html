@@ -431,13 +431,8 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
 <script>
 const { createClient } = supabase;
-const env = window.__APP_ENV__ || {};
-const supabaseUrl = env.SUPABASE_URL || "";
-const supabaseKey = env.SUPABASE_ANON_KEY || "";
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase environment variables. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js/.env.");
-}
+const supabaseUrl = "https://wbqkpaypxuewyuksrgvr.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWtwYXlweHVld3l1a3NyZ3ZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzk2NDcsImV4cCI6MjA4OTk1NTY0N30.aBhy4O_v2WP55uDIzoMqEX4nr9ZF8af5u2SjDjYrLgw";
 const supabase2 = createClient(supabaseUrl, supabaseKey);
 
 let step = 0;
