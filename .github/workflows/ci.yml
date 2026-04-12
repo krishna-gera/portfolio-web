@@ -10,6 +10,11 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      NODE_ENV: production
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,24 +23,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'   # 🔥 speeds up installs
 
+      # ✅ Create .env properly (with variable expansion)
       - name: Create .env from GitHub Secrets
         run: |
-          cat > .env <<'ENVEOF'
-          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
-          ENVEOF
+          echo "SUPABASE_URL=$SUPABASE_URL" >> .env
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
 
+      # ✅ Create env.js safely
       - name: Create env.js runtime config
         run: |
-          cat > env.js <<'ENVJSEOF'
-          window.__APP_ENV__ = {
-            SUPABASE_URL: '${{ secrets.SUPABASE_URL }}',
-            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
-          };
-          ENVJSEOF
+          echo "window.__APP_ENV__ = {" > env.js
+          echo "  SUPABASE_URL: '$SUPABASE_URL'," >> env.js
+          echo "  SUPABASE_ANON_KEY: '$SUPABASE_ANON_KEY'" >> env.js
+          echo "};" >> env.js
 
-      - name: Install dependencies (if package.json exists)
+      - name: Install dependencies
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -45,7 +49,7 @@ jobs:
             echo "No package.json found. Skipping dependency installation."
           fi
 
-      - name: Build (if build script exists)
+      - name: Build
         run: |
           if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
             npm run build
@@ -53,7 +57,7 @@ jobs:
             echo "No build script found. Skipping build."
           fi
 
-      - name: Test (if test script exists)
+      - name: Test
         run: |
           if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
             npm test
