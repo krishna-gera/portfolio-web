@@ -14,6 +14,7 @@ function createSupabaseClient() {
 function setStatus(type, title, message) {
   if (!portfolioStatus) return;
   portfolioStatus.className = `zoom-section portfolio-state state-${type}`;
+  portfolioStatus.classList.add('in-view');
   portfolioStatus.innerHTML = `<h1>${title}</h1><p class="lead">${message}</p>`;
 }
 
@@ -93,6 +94,26 @@ function normalizeSectionKey(value = '') {
   return String(value).replace(/[_\s-]+/g, '').toLowerCase();
 }
 
+function getGitHubUsername(url = '') {
+  if (!url) return '';
+  const match = String(url).trim().match(/github\.com\/([^/?#]+)/i);
+  return match ? match[1] : '';
+}
+
+async function fetchGitHubRepoCount(githubUrl) {
+  const username = getGitHubUsername(githubUrl);
+  if (!username) return 0;
+
+  try {
+    const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
+    if (!response.ok) return 0;
+    const payload = await response.json();
+    return Number(payload.public_repos) || 0;
+  } catch {
+    return 0;
+  }
+}
+
 function transformPortfolioData(raw) {
   const safeOrder = (raw.sectionOrder || [])
     .filter((item) => item && typeof item === 'object')
@@ -107,13 +128,15 @@ function transformPortfolioData(raw) {
     certifications: Array.isArray(raw.certifications) ? raw.certifications.filter((x) => x?.title) : [],
     socials: raw.socials || {},
     settings: raw.settings || {},
-    sectionOrder: safeOrder
+    sectionOrder: safeOrder,
+    githubRepoCount: 0
   };
 }
 
 function createSection(title, sectionClass = '') {
   const section = document.createElement('section');
   section.className = `zoom-section ${sectionClass}`.trim();
+  section.classList.add('in-view');
 
   const heading = document.createElement('h2');
   heading.textContent = title;
@@ -124,6 +147,7 @@ function createSection(title, sectionClass = '') {
 function isRenderableSection(sectionKey, data) {
   const key = normalizeSectionKey(sectionKey);
   if (key === 'hero' || key === 'profile') return Boolean(data.profile);
+  if (key === 'stats') return true;
   if (key === 'skills') return data.skills.length > 0;
   if (key === 'focusareas') return data.focusAreas.length > 0;
   if (key === 'projects') return data.projects.length > 0;
@@ -137,6 +161,7 @@ function renderHero(data) {
   if (!data.profile) return null;
   const hero = document.createElement('section');
   hero.className = 'hero zoom-section portfolio-generated';
+  hero.classList.add('in-view');
 
   const textWrap = document.createElement('div');
   textWrap.innerHTML = `
@@ -173,6 +198,27 @@ function renderSkills(data) {
   });
 
   section.appendChild(grid);
+  return section;
+}
+
+function renderStats(data) {
+  const section = document.createElement('section');
+  section.className = 'stats zoom-section portfolio-generated in-view';
+
+  const metrics = [
+    { value: `${data.projects.length}+`, label: 'Major Projects' },
+    { value: `${data.skills.length}+`, label: 'Technologies Explored' },
+    { value: String(data.focusAreas.length), label: 'Core Focus Areas' },
+    { value: `${data.githubRepoCount}+`, label: 'GitHub Repos' }
+  ];
+
+  metrics.forEach((metric) => {
+    const card = document.createElement('article');
+    card.className = 'stat';
+    card.innerHTML = `<strong>${metric.value}</strong><span>${metric.label}</span>`;
+    section.appendChild(card);
+  });
+
   return section;
 }
 
@@ -294,6 +340,7 @@ function renderPortfolio(data) {
   const rendererMap = {
     hero: renderHero,
     profile: renderHero,
+    stats: renderStats,
     skills: renderSkills,
     focusareas: renderFocusAreas,
     projects: renderProjects,
@@ -304,7 +351,13 @@ function renderPortfolio(data) {
 
   const sectionsFromOrder = data.sectionOrder.length
     ? data.sectionOrder.map((item) => normalizeSectionKey(item.section_key || item.section || item.name))
-    : ['hero', 'skills', 'focusareas', 'projects', 'experience', 'certifications', 'socials'];
+    : ['hero', 'stats', 'skills', 'focusareas', 'projects', 'experience', 'certifications', 'socials'];
+
+  if (!sectionsFromOrder.includes('stats')) {
+    const heroIndex = sectionsFromOrder.findIndex((key) => key === 'hero' || key === 'profile');
+    if (heroIndex >= 0) sectionsFromOrder.splice(heroIndex + 1, 0, 'stats');
+    else sectionsFromOrder.unshift('stats');
+  }
 
   const rendered = new Set();
 
@@ -323,6 +376,7 @@ function renderPortfolio(data) {
   if (rendered.size === 0) {
     const emptyState = document.createElement('section');
     emptyState.className = 'zoom-section portfolio-state state-empty';
+    emptyState.classList.add('in-view');
     emptyState.innerHTML = '<h1>No portfolio data available</h1><p class="lead">This user has no renderable sections yet.</p>';
     portfolioRoot.appendChild(emptyState);
   }
@@ -352,6 +406,7 @@ async function initializeDynamicPortfolio() {
 
     const raw = await fetchPortfolioData(supabaseClient, userId);
     const transformed = transformPortfolioData(raw);
+    transformed.githubRepoCount = await fetchGitHubRepoCount(transformed.socials?.github);
     renderPortfolio(transformed);
   } catch (error) {
     console.error('Failed to load dynamic portfolio', error);

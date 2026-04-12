@@ -305,6 +305,10 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
   padding: 1rem;
 }
 
+.generation-modal[hidden] {
+  display: none !important;
+}
+
 .generation-card {
   width: min(560px, 94vw);
   border-radius: 18px;
@@ -448,7 +452,7 @@ function hideGenerationModal() {
 }
 
 function buildPortfolioUrl(username) {
-  return `${window.location.origin}/v/${encodeURIComponent(username)}`;
+  return `${window.location.origin}/dynamic-portfolio.html?username=${encodeURIComponent(username)}`;
 }
 
 closeModalBtn.addEventListener("click", hideGenerationModal);
@@ -618,9 +622,22 @@ function addCert() {
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
+  showGenerationLoading();
 
   // Collect all form data
   const username = document.getElementById("usernameInput").value.trim();
+  if (!username) {
+    hideGenerationModal();
+    alert("Please enter a username before generating your portfolio.");
+    return;
+  }
+
+  if (!isUsernameValid) {
+    hideGenerationModal();
+    alert("Please check and confirm your username before generating your portfolio.");
+    return;
+  }
+
   const name = document.querySelector('input[placeholder="Full Name"]').value.trim();
   const role = document.querySelector('input[placeholder="Role"]').value.trim();
   const tagline = document.querySelector('input[placeholder="Tagline"]').value.trim();
@@ -706,8 +723,6 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     twitter: socialInputs[2]?.value.trim() || '',
     portfolio: socialInputs[3]?.value.trim() || ''
   };
-
-  showGenerationLoading();
 
   try {
     // 1. Insert user
