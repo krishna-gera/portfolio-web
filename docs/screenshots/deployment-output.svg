@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500">
+<rect width="1200" height="500" fill="#020617"/>
+<text x="40" y="70" fill="#e2e8f0" font-size="40" font-family="Arial">Deployment Output (Sample)</text>
+<rect x="40" y="110" width="1120" height="330" rx="14" fill="#111827" stroke="#38bdf8" stroke-width="3"/>
+<text x="80" y="180" fill="#cbd5e1" font-size="28" font-family="monospace">✓ Site deployed to GitHub Pages</text>
+<text x="80" y="230" fill="#cbd5e1" font-size="24" font-family="monospace">URL: https://&lt;username&gt;.github.io/&lt;repo&gt;/</text>
+<text x="80" y="280" fill="#cbd5e1" font-size="24" font-family="monospace">Generated env.js from SUPABASE_URL + SUPABASE_ANON_KEY</text>
+</svg>
