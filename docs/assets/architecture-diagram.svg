@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <style>
+    .t{font:600 24px Arial;fill:#0f172a}.s{font:500 16px Arial;fill:#334155}.b{fill:#e2e8f0;stroke:#64748b;stroke-width:2}.a{stroke:#2563eb;stroke-width:3;marker-end:url(#m)}
+  </style>
+  <defs><marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2563eb"/></marker></defs>
+  <rect width="1200" height="700" fill="#f8fafc"/>
+  <text x="40" y="50" class="t">Portfolio Builder Architecture</text>
+  <rect x="70" y="120" width="260" height="120" rx="12" class="b"/><text x="110" y="175" class="s">Browser Client</text><text x="96" y="202" class="s">index.html / JS / CSS</text>
+  <rect x="470" y="120" width="260" height="120" rx="12" class="b"/><text x="525" y="175" class="s">GitHub Pages</text><text x="518" y="202" class="s">Static Hosting</text>
+  <rect x="870" y="120" width="260" height="120" rx="12" class="b"/><text x="935" y="175" class="s">Supabase</text><text x="910" y="202" class="s">DB + Storage + Auth</text>
+  <rect x="470" y="370" width="260" height="120" rx="12" class="b"/><text x="500" y="425" class="s">GitHub Actions CI/CD</text><text x="512" y="452" class="s">deploy.yml workflow</text>
+  <rect x="870" y="370" width="260" height="120" rx="12" class="b"/><text x="916" y="425" class="s">GitHub Secrets</text><text x="900" y="452" class="s">SUPABASE_URL / KEY</text>
+  <line x1="330" y1="180" x2="470" y2="180" class="a"/>
+  <line x1="730" y1="180" x2="870" y2="180" class="a"/>
+  <line x1="600" y1="240" x2="600" y2="370" class="a"/>
+  <line x1="730" y1="430" x2="870" y2="430" class="a"/>
+  <line x1="1000" y1="370" x2="1000" y2="240" class="a"/>
+</svg>

@@ -439,21 +439,59 @@ button:hover { background: color-mix(in srgb, var(--accent) 80%, black); }
 
 <script>
 const { createClient } = supabase;
-const env = window.__APP_ENV__ || {};
-const supabaseUrl = env.SUPABASE_URL || "";
-const supabaseKey = env.SUPABASE_ANON_KEY || "";
 let supabase2 = null;
+let supabaseInitPromise = null;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase environment variables. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js/.env.");
-} else {
-  supabase2 = createClient(supabaseUrl, supabaseKey);
+async function resolveRuntimeEnv() {
+  const env = window.__APP_ENV__ || {};
+  let supabaseUrl = env.SUPABASE_URL || env.SUPABASE_URI || "";
+  let supabaseKey = env.SUPABASE_ANON_KEY || "";
+
+  if (!supabaseUrl || !supabaseKey) {
+    try {
+      const response = await fetch("/api/env", { cache: "no-store" });
+      if (response.ok) {
+        const payload = await response.json();
+        supabaseUrl = supabaseUrl || payload.SUPABASE_URL || payload.SUPABASE_URI || "";
+        supabaseKey = supabaseKey || payload.SUPABASE_ANON_KEY || "";
+      }
+    } catch (error) {
+      console.warn("Could not fetch /api/env fallback.", error);
+    }
+  }
+
+  return { supabaseUrl, supabaseKey };
 }
 
-function requireSupabaseClient() {
-  if (supabase2) return true;
-  alert("Supabase configuration missing. Please set SUPABASE_URL and SUPABASE_ANON_KEY.");
-  return false;
+async function ensureSupabaseClient() {
+  if (supabase2) return supabase2;
+  if (supabaseInitPromise) return supabaseInitPromise;
+
+  supabaseInitPromise = (async () => {
+    const { supabaseUrl, supabaseKey } = await resolveRuntimeEnv();
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase configuration missing. Set SUPABASE_URL and SUPABASE_ANON_KEY in env.js or host environment variables.");
+    }
+    supabase2 = createClient(supabaseUrl, supabaseKey);
+    return supabase2;
+  })();
+
+  try {
+    return await supabaseInitPromise;
+  } catch (error) {
+    supabaseInitPromise = null;
+    throw error;
+  }
+}
+
+async function requireSupabaseClient() {
+  try {
+    return await ensureSupabaseClient();
+  } catch (error) {
+    console.error(error.message);
+    alert(error.message);
+    return null;
+  }
 }
 
 let step = 0;
@@ -565,7 +603,8 @@ updateStep();
 
 // USERNAME CHECK
 async function checkUsername() {
-  if (!requireSupabaseClient()) return;
+  const client = await requireSupabaseClient();
+  if (!client) return;
   const username = usernameInput.value.trim();
   const status = usernameStatus;
 
@@ -579,7 +618,7 @@ async function checkUsername() {
   status.className = "status loading";
 
   try {
-    const { data, error } = await supabase2
+    const { data, error } = await client
       .from("users")
       .select("username")
       .eq("username", username)
@@ -709,7 +748,8 @@ function addCert() {
 
 document.getElementById("form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!requireSupabaseClient()) return;
+  const client = await requireSupabaseClient();
+  if (!client) return;
   showGenerationLoading();
 
   // Collect all form data
@@ -740,7 +780,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     const file = fileInput.files[0];
     const fileExt = file.name.split('.').pop();
     const fileName = `${username}_${Date.now()}.${fileExt}`;
-    const { data, error } = await supabase2.storage
+    const { data, error } = await client.storage
       .from('portfolio-photos')
       .upload(fileName, file);
     if (error) {
@@ -748,7 +788,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
       alert("Error uploading photo: " + error.message);
       return;
     }
-    profilePhotoUrl = supabase2.storage
+    profilePhotoUrl = client.storage
       .from('portfolio-photos')
       .getPublicUrl(fileName).data.publicUrl;
   }
@@ -812,7 +852,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
 
   try {
     // 1. Insert user
-    const { data: userData, error: userError } = await supabase2
+    const { data: userData, error: userError } = await client
       .from("users")
       .insert([{ username }])
       .select()
@@ -822,7 +862,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     const userId = userData.id;
 
     // 2. Insert profile
-    const { error: profileError } = await supabase2
+    const { error: profileError } = await client
       .from("profiles")
       .insert([{
         user_id: userId,
@@ -844,7 +884,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         name: skill.name,
         level: skill.level
       }));
-      const { error: skillsError } = await supabase2
+      const { error: skillsError } = await client
         .from("skills")
         .insert(skillsData);
       if (skillsError) throw skillsError;
@@ -856,7 +896,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         user_id: userId,
         title: area.title
       }));
-      const { error: focusError } = await supabase2
+      const { error: focusError } = await client
         .from("focus_areas")
         .insert(focusData);
       if (focusError) throw focusError;
@@ -870,7 +910,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         description: project.description,
         tech_stack: project.techStack
       }));
-      const { error: projectsError } = await supabase2
+      const { error: projectsError } = await client
         .from("projects")
         .insert(projectsData);
       if (projectsError) throw projectsError;
@@ -887,7 +927,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         start_date: exp.start_date,
         end_date: exp.end_date
       }));
-      const { error: experienceError } = await supabase2
+      const { error: experienceError } = await client
         .from("experience")
         .insert(experienceData);
       if (experienceError) throw experienceError;
@@ -902,14 +942,14 @@ document.getElementById("form").addEventListener("submit", async (e) => {
         issue_date: cert.issue_date,
         credential_url: cert.credential_url
       }));
-      const { error: certsError } = await supabase2
+      const { error: certsError } = await client
         .from("certifications")
         .insert(certsData);
       if (certsError) throw certsError;
     }
 
     // 8. Insert social links
-    const { error: socialsError } = await supabase2
+    const { error: socialsError } = await client
       .from("socials")
       .insert([{
         user_id: userId,
@@ -921,7 +961,7 @@ document.getElementById("form").addEventListener("submit", async (e) => {
     if (socialsError) throw socialsError;
 
     // 8. Insert default settings
-    const { error: settingsError } = await supabase2
+    const { error: settingsError } = await client
       .from("settings")
       .insert([{
         user_id: userId,
