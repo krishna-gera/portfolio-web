@@ -26,20 +26,20 @@ jobs:
       - name: Create .env from GitHub Secrets
         run: |
           cat > .env <<'ENVEOF'
-          VITE_API_URL=${{ secrets.VITE_API_URL }}
-          VITE_API_KEY=${{ secrets.VITE_API_KEY }}
           SUPABASE_URL=${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_API_URL=${{ secrets.SUPABASE_URL }}
+          VITE_API_KEY=${{ secrets.SUPABASE_ANON_KEY }}
           ENVEOF
 
       - name: Create env.js runtime config
         run: |
           cat > env.js <<'ENVJSEOF'
           window.__APP_ENV__ = {
-            VITE_API_URL: '${{ secrets.VITE_API_URL }}',
-            VITE_API_KEY: '${{ secrets.VITE_API_KEY }}',
             SUPABASE_URL: '${{ secrets.SUPABASE_URL }}',
-            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
+            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}',
+            VITE_API_URL: '${{ secrets.SUPABASE_URL }}',
+            VITE_API_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
           };
           ENVJSEOF
 

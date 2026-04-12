@@ -1,6 +1,6 @@
 const APP_ENV = window.__APP_ENV__ || {};
-const SUPABASE_URL = APP_ENV.SUPABASE_URL || APP_ENV.VITE_API_URL || '';
-const SUPABASE_KEY = APP_ENV.SUPABASE_ANON_KEY || APP_ENV.VITE_API_KEY || '';
+const SUPABASE_URL = APP_ENV.SUPABASE_URL || '';
+const SUPABASE_KEY = APP_ENV.SUPABASE_ANON_KEY || '';
 
 const portfolioRoot = document.getElementById('portfolioRoot');
 const portfolioStatus = document.getElementById('portfolioStatus');
