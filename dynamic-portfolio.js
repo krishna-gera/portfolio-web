@@ -94,21 +94,33 @@ function normalizeSectionKey(value = '') {
   return String(value).replace(/[_\s-]+/g, '').toLowerCase();
 }
 
-function getGitHubUsername(url = '') {
-  if (!url) return '';
-  const match = String(url).trim().match(/github\.com\/([^/?#]+)/i);
-  return match ? match[1] : '';
+function extractGitHubUsername(profileUrl = '') {
+  const raw = String(profileUrl || '').trim();
+  if (!raw) return '';
+
+  const normalizedUrl = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+
+  try {
+    const parsed = new URL(normalizedUrl);
+    if (!/^(www\.)?github\.com$/i.test(parsed.hostname)) return '';
+    const [username] = parsed.pathname.split('/').filter(Boolean);
+    return username || '';
+  } catch {
+    return '';
+  }
 }
 
-async function fetchGitHubRepoCount(githubUrl) {
-  const username = getGitHubUsername(githubUrl);
+async function getPublicRepoCountFromGitHubUrl(profileUrl = '') {
+  const username = extractGitHubUsername(profileUrl);
   if (!username) return 0;
 
   try {
     const response = await fetch(`https://api.github.com/users/${encodeURIComponent(username)}`);
     if (!response.ok) return 0;
+
     const payload = await response.json();
-    return Number(payload.public_repos) || 0;
+    const repoCount = Number(payload?.public_repos);
+    return Number.isFinite(repoCount) ? repoCount : 0;
   } catch {
     return 0;
   }
@@ -406,7 +418,7 @@ async function initializeDynamicPortfolio() {
 
     const raw = await fetchPortfolioData(supabaseClient, userId);
     const transformed = transformPortfolioData(raw);
-    transformed.githubRepoCount = await fetchGitHubRepoCount(transformed.socials?.github);
+    transformed.githubRepoCount = await getPublicRepoCountFromGitHubUrl(transformed.socials?.github);
     renderPortfolio(transformed);
   } catch (error) {
     console.error('Failed to load dynamic portfolio', error);
