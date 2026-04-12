@@ -17,7 +17,7 @@ Pipeline flow:
    - `SUPABASE_URL` (preferred) or `SUPABASE_URI` (fallback)
 3. Validate Supabase URL format (`https://<project-ref>.supabase.co`).
 4. Generate `env.js` at deploy time from GitHub Secrets.
-5. Upload static artifact and deploy to GitHub Pages.
+5. Upload static artifact and deploy to GitHub Pages (workflow requests Pages auto-enable via `configure-pages` `enablement: true`).
 
 For Vercel deployments, the app can also read `SUPABASE_URL`/`SUPABASE_ANON_KEY` from `/api/env` (serverless env fallback) when `env.js` is empty.
 
