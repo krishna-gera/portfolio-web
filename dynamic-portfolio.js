@@ -27,9 +27,12 @@ function createSupabaseClient() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {
     throw new Error('Supabase environment variables are missing.');
   }
-  if (!window.supabase?.createClient) {
+
+  if (!window.supabase || !window.supabase.createClient) {
+    console.error("Supabase not loaded yet:", window.supabase);
     throw new Error('Supabase client SDK is unavailable.');
   }
+
   return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
@@ -54,7 +57,7 @@ async function fetchUserIdByUsername(client, username) {
     .select('id')
     .eq('username', username)
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
   return data?.id || null;
