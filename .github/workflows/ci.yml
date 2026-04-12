@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            **/package-lock.json
+
+      - name: Create .env from GitHub Secrets
+        run: |
+          cat > .env <<'ENVEOF'
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          VITE_API_URL=${{ secrets.SUPABASE_URL }}
+          VITE_API_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          ENVEOF
+
+      - name: Create env.js runtime config
+        run: |
+          cat > env.js <<'ENVJSEOF'
+          window.__APP_ENV__ = {
+            SUPABASE_URL: '${{ secrets.SUPABASE_URL }}',
+            SUPABASE_ANON_KEY: '${{ secrets.SUPABASE_ANON_KEY }}',
+            VITE_API_URL: '${{ secrets.SUPABASE_URL }}',
+            VITE_API_KEY: '${{ secrets.SUPABASE_ANON_KEY }}'
+          };
+          ENVJSEOF
+
+      - name: Install dependencies (if package.json exists)
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          else
+            echo "No package.json found. Skipping dependency installation."
+          fi
+
+      - name: Build (if build script exists)
+        run: |
+          if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
+            npm run build
+          else
+            echo "No build script found. Skipping build."
+          fi
+
+      - name: Test (if test script exists)
+        run: |
+          if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
+            npm test
+          else
+            echo "No test script found. Skipping tests."
+          fi
