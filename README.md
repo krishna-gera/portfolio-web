@@ -19,6 +19,8 @@ Pipeline flow:
 4. Generate `env.js` at deploy time from GitHub Secrets.
 5. Upload static artifact and deploy to GitHub Pages.
 
+For Vercel deployments, the app can also read `SUPABASE_URL`/`SUPABASE_ANON_KEY` from `/api/env` (serverless env fallback) when `env.js` is empty.
+
 This approach keeps Supabase configuration outside committed source and fixes mismatches between `SUPABASE_URI` and `SUPABASE_URL` naming.
 
 # 5. Git Workflow Used
