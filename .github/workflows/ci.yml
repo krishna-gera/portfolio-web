@@ -10,6 +10,10 @@ jobs:
   test-build:
     runs-on: ubuntu-latest
 
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,25 +22,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'   # 🚀 caching added
 
       - name: Install dependencies
-        run: |
-          if [ -f package.json ]; then
-            npm install
-          fi
+        run: npm ci
 
-      - name: Run lint (optional)
+      - name: Lint check
         run: |
-          if [ -f package.json ] && npm run | grep lint; then
+          if npm run | grep lint; then
             npm run lint
           else
-            echo "No lint script"
+            echo "⚠️ No lint script found"
           fi
 
-      - name: Run tests (optional)
+      - name: Run tests
         run: |
-          if [ -f package.json ] && npm run | grep test; then
+          if npm run | grep test; then
             npm test
           else
-            echo "No tests"
+            echo "⚠️ No test script found"
           fi
+
+      - name: Build project (IMPORTANT)
+        run: |
+          if npm run | grep build; then
+            npm run build
+          else
+            echo "⚠️ No build script found"
+            exit 1   # ❌ FAIL if no build
+          fi
+
+      - name: CI Success
+        run: echo "✅ All checks passed"
