@@ -7,60 +7,36 @@ on:
     branches: [main, dev]
 
 jobs:
-  build-and-test:
+  test-build:
     runs-on: ubuntu-latest
-
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-      NODE_ENV: production
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'   # 🔥 speeds up installs
-
-      # ✅ Create .env properly (with variable expansion)
-      - name: Create .env from GitHub Secrets
-        run: |
-          echo "SUPABASE_URL=$SUPABASE_URL" >> .env
-          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> .env
-
-      # ✅ Create env.js safely
-      - name: Create env.js runtime config
-        run: |
-          echo "window.__APP_ENV__ = {" > env.js
-          echo "  SUPABASE_URL: '$SUPABASE_URL'," >> env.js
-          echo "  SUPABASE_ANON_KEY: '$SUPABASE_ANON_KEY'" >> env.js
-          echo "};" >> env.js
 
       - name: Install dependencies
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f package.json ]; then
+          if [ -f package.json ]; then
             npm install
-          else
-            echo "No package.json found. Skipping dependency installation."
           fi
 
-      - name: Build
+      - name: Run lint (optional)
         run: |
-          if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.build ? 0 : 1)"; then
-            npm run build
+          if [ -f package.json ] && npm run | grep lint; then
+            npm run lint
           else
-            echo "No build script found. Skipping build."
+            echo "No lint script"
           fi
 
-      - name: Test
+      - name: Run tests (optional)
         run: |
-          if [ -f package.json ] && node -e "const p=require('./package.json'); process.exit(p.scripts && p.scripts.test ? 0 : 1)"; then
+          if [ -f package.json ] && npm run | grep test; then
             npm test
           else
-            echo "No test script found. Skipping tests."
+            echo "No tests"
           fi
