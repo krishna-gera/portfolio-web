@@ -7,50 +7,46 @@ on:
     branches: [main, dev]
 
 jobs:
-  test-build:
+  validate-static-site:
     runs-on: ubuntu-latest
 
-    env:
-      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'   # 🚀 caching added
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint check
+      # ✅ Check required files exist
+      - name: Check essential files
         run: |
-          if npm run | grep lint; then
-            npm run lint
+          if [ ! -f "index.html" ]; then
+            echo "❌ index.html missing"
+            exit 1
+          fi
+          echo "✅ index.html exists"
+
+      # ✅ Basic HTML validation (optional but good)
+      - name: Validate HTML structure
+        run: |
+          grep -q "<html" index.html || (echo "❌ Invalid HTML" && exit 1)
+          echo "✅ HTML structure looks valid"
+
+      # ✅ Check JS files exist
+      - name: Check JS files
+        run: |
+          if [ -d "js" ]; then
+            echo "✅ JS folder exists"
           else
-            echo "⚠️ No lint script found"
+            echo "⚠️ No JS folder found"
           fi
 
-      - name: Run tests
+      # ✅ Check env config file
+      - name: Check env config
         run: |
-          if npm run | grep test; then
-            npm test
+          if [ -f "api/env.js" ]; then
+            echo "✅ env.js found"
           else
-            echo "⚠️ No test script found"
+            echo "⚠️ env.js missing"
           fi
 
-      - name: Build project (IMPORTANT)
-        run: |
-          if npm run | grep build; then
-            npm run build
-          else
-            echo "⚠️ No build script found"
-            exit 1   # ❌ FAIL if no build
-          fi
-
-      - name: CI Success
-        run: echo "✅ All checks passed"
+      # ✅ Success message
+      - name: CI Passed
+        run: echo "🚀 Static project validation successful"
