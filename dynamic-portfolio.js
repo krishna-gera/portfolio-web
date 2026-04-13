@@ -1,4 +1,22 @@
-const APP_ENV = window.__APP_ENV__ || {};
+let SUPABASE_URL = "";
+let SUPABASE_KEY = "";
+
+async function loadEnv() {
+  try {
+    const res = await fetch("/api/env");
+    const data = await res.json();
+
+    SUPABASE_URL = data.SUPABASE_URL;
+    SUPABASE_KEY = data.SUPABASE_ANON_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      throw new Error("Missing ENV from API");
+    }
+  } catch (err) {
+    console.error("ENV load failed:", err);
+    throw err;
+  }
+}
 
 // ✅ Try multiple sources (robust fallback)
 const SUPABASE_URL =
@@ -451,4 +469,14 @@ async function initializeDynamicPortfolio() {
   }
 }
 
-initializeDynamicPortfolio();
+async function startApp() {
+  try {
+    await loadEnv();
+    initializeDynamicPortfolio();
+  } catch (err) {
+    console.error("App init failed:", err);
+    setStatus("error", "Config Error", "Failed to load environment variables.");
+  }
+}
+
+startApp();
