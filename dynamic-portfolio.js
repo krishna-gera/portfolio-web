@@ -18,25 +18,6 @@ async function loadEnv() {
   }
 }
 
-// ✅ Try multiple sources (robust fallback)
-const SUPABASE_URL =
-  APP_ENV.SUPABASE_URL ||
-  window.SUPABASE_URL ||
-  '';
-
-const SUPABASE_KEY =
-  APP_ENV.SUPABASE_ANON_KEY ||
-  window.SUPABASE_ANON_KEY ||
-  '';
-
-// ✅ Debug (remove later in production)
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("❌ Missing Supabase ENV:", {
-    SUPABASE_URL,
-    SUPABASE_KEY,
-    APP_ENV
-  });
-}
 
 const portfolioRoot = document.getElementById('portfolioRoot');
 const portfolioStatus = document.getElementById('portfolioStatus');
@@ -62,11 +43,7 @@ function setStatus(type, title, message) {
 }
 
 function getUsernameFromUrl() {
-  const pathParts = window.location.pathname.split('/').filter(Boolean);
-  const vIndex = pathParts.findIndex((part) => part.toLowerCase() === 'v');
-  const usernameFromPath = vIndex >= 0 ? decodeURIComponent(pathParts[vIndex + 1] || '').trim() : '';
-  const usernameFromQuery = new URLSearchParams(window.location.search).get('username')?.trim() || '';
-  return usernameFromPath || usernameFromQuery;
+  return new URLSearchParams(window.location.search).get('username')?.trim() || '';
 }
 
 async function fetchUserIdByUsername(client, username) {
